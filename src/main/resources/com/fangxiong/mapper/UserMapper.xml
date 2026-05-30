@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fangxiong.mapper.UserMapper">
+    <select id="selectById" resultType="com.fangxiong.pojo.User">
+        select * from user where userId=#{userId}
+    </select>
+
+    <select id="selectAll" resultType="com.fangxiong.pojo.User">
+        select * from user
+    </select>
+
+    <insert id="insert" parameterType="com.fangxiong.pojo.User">
+        insert into user(username,password,phone,role,avatarUrl)
+        values(#{username},#{password},#{phone},#{role},#{avatarUrl})
+    </insert>
+
+    <update id="update" parameterType="com.fangxiong.pojo.User">
+        update user set username=#{username},password=#{password},phone=#{phone},
+                        role=#{role},avatarUrl=#{avatarUrl} where userId=#{userId}
+    </update>
+
+    <delete id="deleteById">
+        delete from user where userId=#{userId}
+    </delete>
+
+    <select id="selectByName" resultType="com.fangxiong.pojo.User">
+        select * from user where username = #{username}
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user where role = 1
+    </select>
+
+
+    <!-- 用户列表：排除管理员 role != 2 + 邮箱搜索 + 状态筛选 -->
+    <select id="getUserList" resultType="com.fangxiong.pojo.User">
+        SELECT * FROM user
+        <where>
+            <!-- 排除管理员：只允许普通用户/封禁用户 -->
+            role != 2
+
+            <if test="email != null and email != ''">
+                AND email LIKE CONCAT('%', #{email}, '%')
+            </if>
+
+            <!-- 状态筛选：1正常 / -1封禁（不冲突） -->
+            <if test="status != null">
+                AND role = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 封禁：只能封 非管理员 -->
+    <update id="banUser">
+        UPDATE user
+        SET role = -1, ban_reason = #{banReason}
+        WHERE id = #{id}
+          AND role != 2
+    </update>
+
+    <!-- 解封：只能解 非管理员 -->
+    <update id="unBanUser">
+        UPDATE user
+        SET role = 1, ban_reason = NULL
+        WHERE id = #{id}
+          AND role != 2
+    </update>
+</mapper>

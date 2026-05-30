@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fangxiong.mapper.CollectMapper">
+    <select id="selectById" resultType="com.fangxiong.pojo.Collect">
+        select * from collect where collectId=#{collectId}
+    </select>
+    <select id="selectAll" resultType="com.fangxiong.pojo.Collect">
+        select * from collect
+    </select>
+    <insert id="insert" parameterType="com.fangxiong.pojo.Collect">
+        insert into collect(userId,goodsId) values(#{userId},#{goodsId})
+    </insert>
+    <delete id="deleteById">
+        delete from collect where collectId=#{collectId}
+    </delete>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fangxiong.mapper.OrdersMapper">
+    <select id="selectById" resultType="com.fangxiong.pojo.Orders">
+        select * from orders where orderId=#{orderId}
+    </select>
+    <select id="selectAll" resultType="com.fangxiong.pojo.Orders">
+        select * from orders
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM orders
+    </select>
+
+    <select id="countTodayOrder" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM orders
+        WHERE DATE(create_time) = CURDATE()
+    </select>
+    <insert id="insert" parameterType="com.fangxiong.pojo.Orders">
+        insert into orders(goodsId,buyerId,orderStatus,createTime)
+        values(#{goodsId},#{buyerId},#{orderStatus},now())
+    </insert>
+    <update id="update" parameterType="com.fangxiong.pojo.Orders">
+        update orders set goodsId=#{goodsId},buyerId=#{buyerId},
+                          orderStatus=#{orderStatus} where orderId=#{orderId}
+    </update>
+    <delete id="deleteById">
+        delete from orders where orderId=#{orderId}
+    </delete>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fangxiong.mapper.GoodsMapper">
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM goods
+    </select>
+
+    <select id="selectRecentGoods" resultType="com.fangxiong.vo.RecentGoodsVO">
+        SELECT
+            g.name,
+            u.username,
+            g.price,
+            g.create_time AS time
+        FROM goods g
+                 LEFT JOIN `user` u ON g.user_id = u.id
+        ORDER BY g.create_time DESC
+        LIMIT 8
+    </select>
+
+    <select id="selectWaitCheck" resultType="com.fangxiong.vo.TodoVO">
+        SELECT
+            id,
+            CONCAT('商品【', name, '】待审核') AS content,
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS time,
+            0 AS status
+        FROM goods
+        WHERE audit_status = 0
+        ORDER BY create_time DESC
+        LIMIT 6
+    </select>
+
+    <select id="findAuditGoods" resultType="com.fangxiong.pojo.Goods">
+        SELECT
+        g.*,
+        u.username  <!-- 这里查到发布人名字 -->
+        FROM goods g
+        LEFT JOIN `user` u ON g.user_id = u.id
+        WHERE g.audit_status = 0
+        ORDER BY g.create_time DESC
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findById" resultType="com.fangxiong.pojo.Goods">
+        SELECT
+            g.*,
+            u.username
+        FROM goods g
+                 LEFT JOIN `user` u ON g.user_id = u.id
+        WHERE g.id = #{id}
+    </select>
+
+    <!-- 审核通过 -->
+    <update id="updateAuditPass">
+        UPDATE goods
+        SET audit_status = 1, sale_status = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 审核驳回 -->
+    <update id="updateAuditReject">
+        UPDATE goods
+        SET audit_status = 2, reject_reason = #{rejectReason}
+        WHERE id = #{id}
+    </update>
+
+    <select id="findRejectedGoods" resultType="com.fangxiong.pojo.Goods">
+        SELECT
+            g.*,
+            u.username
+        FROM goods g
+                 LEFT JOIN user u ON g.user_id = u.id
+        WHERE g.audit_status = 2
+        ORDER BY g.create_time DESC
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM goods WHERE id = #{id}
+    </delete>
+</mapper>
