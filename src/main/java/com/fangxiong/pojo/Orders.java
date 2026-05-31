@@ -10,10 +10,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Orders {
-    private Integer id;
-    private Integer goodsId;
-    private Integer buyerId;
-    private Integer status; // 0待处理 1已完成 2已取消
+    private Long id;
+    private Long goodsId;
+    private Long buyerId;
+    private Integer status;
+
+    private LocalDateTime payTime;     // 支付时间
+    private LocalDateTime finishTime;  // 完成时间
+
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

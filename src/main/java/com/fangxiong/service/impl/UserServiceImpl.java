@@ -1,5 +1,6 @@
 package com.fangxiong.service.impl;
 
+import com.fangxiong.dto.LoginResult;
 import com.fangxiong.mapper.UserMapper;
 import com.fangxiong.pojo.User;
 import com.fangxiong.service.UserService;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result banUser(Integer id, String banReason) {
+    public Result banUser(Long id, String banReason) {
         User user = new User();
         user.setId(id);
         user.setRole(-1);
@@ -40,8 +41,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result unBanUser(Integer id) {
+    public Result unBanUser(Long id) {
         userMapper.unBanUser(id);
         return Result.success();
+    }
+
+    @Override
+    public Result getCurrentUser(LoginResult currentUserInfo) {
+        User user = userMapper.selectById(currentUserInfo.getId());
+        return Result.success(user);
     }
 }

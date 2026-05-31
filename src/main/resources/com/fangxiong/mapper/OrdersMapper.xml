@@ -3,29 +3,62 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fangxiong.mapper.OrdersMapper">
-    <select id="selectById" resultType="com.fangxiong.pojo.Orders">
-        select * from orders where orderId=#{orderId}
-    </select>
-    <select id="selectAll" resultType="com.fangxiong.pojo.Orders">
-        select * from orders
-    </select>
     <select id="selectCount" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM orders
     </select>
-
     <select id="countTodayOrder" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM orders
         WHERE DATE(create_time) = CURDATE()
     </select>
-    <insert id="insert" parameterType="com.fangxiong.pojo.Orders">
-        insert into orders(goodsId,buyerId,orderStatus,createTime)
-        values(#{goodsId},#{buyerId},#{orderStatus},now())
-    </insert>
-    <update id="update" parameterType="com.fangxiong.pojo.Orders">
-        update orders set goodsId=#{goodsId},buyerId=#{buyerId},
-                          orderStatus=#{orderStatus} where orderId=#{orderId}
+    <select id="selectMyOrdersById" resultType="com.fangxiong.vo.OrderVO">
+        SELECT
+        o.id,
+        g.name goodsName,
+        g.images,
+        g.price,
+        o.status,
+        o.create_time createTime,
+        o.buyer_id buyerId,
+        g.user_id sellerId
+        FROM orders o
+        LEFT JOIN goods g ON o.goods_id = g.id
+        WHERE o.buyer_id = #{id}    <!-- 我买到的 -->
+        OR g.user_id = #{id}    <!-- 我卖出的（关键！！！） -->
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="getOrderDetailsById" resultType="com.fangxiong.vo.OrderDetailsVO">
+        SELECT
+            o.id,
+            o.goods_id          AS goodsId,
+            o.buyer_id          AS buyerId,
+            o.status,
+            o.pay_time          AS payTime,
+            o.finish_time       AS finishTime,
+            o.create_time       AS createTime,
+            o.update_time       AS updateTime,
+
+            g.name              AS name,
+            g.price             AS price,
+            g.detail_info       AS detailInfo,
+            g.images            AS images,
+
+            u.id                AS sellerId,
+            u.username          AS sellerName,
+            u.avatar_url        AS avatarUrl
+
+        FROM orders o
+                 LEFT JOIN goods g ON o.goods_id = g.id
+                 LEFT JOIN user u  ON g.user_id = u.id
+        WHERE o.id = #{orderId}
+    </select>
+
+    <!-- 取消订单 -->
+    <update id="cancelOrder">
+        UPDATE orders
+        SET status = 2, update_time = NOW()
+        WHERE id = #{orderId}
     </update>
-    <delete id="deleteById">
-        delete from orders where orderId=#{orderId}
-    </delete>
+
+
 </mapper>

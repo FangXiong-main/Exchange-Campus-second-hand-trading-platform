@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostComment {
-    private Integer id;
+    private Long id;
     private Integer postId;       // 关联帖子ID
     private Integer userId;        // 评论人ID
     private String content;        // 评论内容

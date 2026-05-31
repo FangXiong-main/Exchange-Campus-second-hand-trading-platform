@@ -23,7 +23,7 @@ public class EmailUtil {
         String html = """
             <div style="max-width:600px; margin:30px auto; background:#ffffff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:30px; font-family: 'Microsoft YaHei', sans-serif;">
                 <div style="text-align:center; font-size:18px; font-weight:bold; color:#2F4056; padding-bottom:16px; border-bottom:1px solid #eee;">
-                    ---- Exchange！校园二手交易平台 ----
+                    Exchange！校园二手交易平台
                 </div>
                 <div style="margin-top:24px; font-size:15px; color:#333; line-height:1.8;">
                     <p>您好！</p>
@@ -34,7 +34,7 @@ public class EmailUtil {
                     <p>该验证码 5 分钟内有效，请勿泄露给他人。</p>
                 </div>
                 <div style="margin-top:30px; text-align:center; font-size:14px; color:#999; padding-top:16px; border-top:1px solid #eee;">
-                    ---- Exchange！运营团队 ----
+                    Exchange！运营团队
                 </div>
             </div>
             """.formatted(code);

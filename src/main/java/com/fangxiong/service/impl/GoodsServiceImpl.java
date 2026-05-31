@@ -6,6 +6,7 @@ import com.fangxiong.service.GoodsService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     // ====================== 查询详情 ======================
     @Override
-    public Goods findById(Integer id) {
+    public Goods findById(Long id) {
         return goodsMapper.findById(id);
     }
 
@@ -45,7 +46,35 @@ public class GoodsServiceImpl implements GoodsService {
 
     // ====================== 删除 ======================
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         goodsMapper.deleteById(id);
+    }
+
+    @Override
+    public List<Goods> myPublish(Long id) {
+        return goodsMapper.selectMyPublish(id);
+    }
+
+    @Override
+    public List<Goods> myFavorite(Long id) {
+        return goodsMapper.selectMyFavorite(id);
+    }
+
+    @Override
+    public void updateGoods(Goods goods) {
+        goods.setUpdateTime(LocalDateTime.now());
+        goods.setAuditStatus(0);
+        goods.setSaleStatus(0);
+        goodsMapper.updateGoods(goods);
+    }
+
+    @Override
+    public void updateSaleStatus(Long id, Integer saleStatus) {
+        goodsMapper.updateSaleStatus(id, saleStatus);
+    }
+
+    @Override
+    public void addGoods(Goods goods) {
+        goodsMapper.addGoods(goods);
     }
 }

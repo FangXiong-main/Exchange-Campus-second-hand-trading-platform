@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Goods {
-    private Integer id;
+    private Long id;
     private String name;
     private BigDecimal price;
     private String detailInfo;
@@ -20,7 +20,7 @@ public class Goods {
     private String rejectReason;
     private Integer saleStatus;
     private Integer auditStatus;
-    private Integer userId;
+    private Long userId;
     private String username;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

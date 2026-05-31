@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Collect {
-    private Integer id;
-    private Integer userId;
-    private Integer goodsId;
+    private Long id;
+    private Long userId;
+    private Long goodsId;
     private LocalDateTime createTime;
 }

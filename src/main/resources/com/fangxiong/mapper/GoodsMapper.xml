@@ -3,6 +3,31 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fangxiong.mapper.GoodsMapper">
+    <insert id="addGoods">
+        INSERT INTO goods (
+            name,
+            price,
+            detail_info,
+            images,
+            type,
+            sale_status,
+            audit_status,
+            user_id,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{name},
+                     #{price},
+                     #{detailInfo},
+                     #{images},
+                     #{type},
+                     #{saleStatus},
+                     #{auditStatus},
+                     #{userId},
+                     #{createTime},
+                     #{updateTime}
+                 )
+    </insert>
     <select id="selectCount" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM goods
     </select>
@@ -44,10 +69,24 @@
     <!-- 根据ID查询 -->
     <select id="findById" resultType="com.fangxiong.pojo.Goods">
         SELECT
-            g.*,
-            u.username
+        g.id,
+        g.name,
+        g.price,
+        g.detail_info,
+        g.images,
+        g.type,
+        g.reject_reason,
+        g.sale_status,
+        g.audit_status,
+        g.user_id,
+        g.create_time,
+        g.update_time,
+
+        u.username,
+        u.avatar_url
+
         FROM goods g
-                 LEFT JOIN `user` u ON g.user_id = u.id
+        LEFT JOIN user u ON g.user_id = u.id
         WHERE g.id = #{id}
     </select>
 
@@ -64,6 +103,23 @@
         SET audit_status = 2, reject_reason = #{rejectReason}
         WHERE id = #{id}
     </update>
+    <update id="updateGoods">
+        UPDATE goods
+        SET
+            name = #{name},
+            price = #{price},
+            images = #{images},
+            detail_info = #{detailInfo},
+            audit_status = #{auditStatus},
+            type = #{type},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    <update id="updateSaleStatus">
+        UPDATE goods
+        SET sale_status = #{saleStatus}
+        WHERE id = #{id}
+    </update>
 
     <select id="findRejectedGoods" resultType="com.fangxiong.pojo.Goods">
         SELECT
@@ -73,6 +129,27 @@
                  LEFT JOIN user u ON g.user_id = u.id
         WHERE g.audit_status = 2
         ORDER BY g.create_time DESC
+    </select>
+    <select id="selectMyPublish" parameterType="java.lang.Long" resultType="com.fangxiong.pojo.Goods">
+        SELECT * FROM goods
+        WHERE user_id = #{id}
+        ORDER BY create_time DESC
+    </select>
+    <select id="selectMyFavorite" resultType="com.fangxiong.pojo.Goods">
+        SELECT
+            g.id,
+            g.name,
+            g.price,
+            g.images,
+            g.type,
+            g.sale_status,
+            g.audit_status,
+            g.user_id,
+            g.create_time
+        FROM collect c
+                 INNER JOIN goods g ON c.goods_id = g.id
+        WHERE c.user_id = #{userId}
+        ORDER BY c.create_time DESC
     </select>
 
     <!-- 删除 -->

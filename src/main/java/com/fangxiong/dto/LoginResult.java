@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResult {
-    private Integer id;
+    private Long id;
     private String username;
     private String token;
     private Integer role;
+    private String school;
+    private String avatarUrl;
 }

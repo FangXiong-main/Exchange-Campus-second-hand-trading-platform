@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
-    private Integer id;
+    private Long id;
     private String content;        // 帖子内容
     private Integer userId;        // 发表用户
     private Integer likeCount;     // 收藏数

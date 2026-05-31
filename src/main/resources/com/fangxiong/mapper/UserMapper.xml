@@ -4,16 +4,18 @@
 
 <mapper namespace="com.fangxiong.mapper.UserMapper">
     <select id="selectById" resultType="com.fangxiong.pojo.User">
-        select * from user where userId=#{userId}
+        select * from user where id=#{id}
     </select>
 
     <select id="selectAll" resultType="com.fangxiong.pojo.User">
         select * from user
     </select>
 
-    <insert id="insert" parameterType="com.fangxiong.pojo.User">
-        insert into user(username,password,phone,role,avatarUrl)
-        values(#{username},#{password},#{phone},#{role},#{avatarUrl})
+    <insert id="insert" parameterType="com.fangxiong.pojo.User"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into user(username,password,phone,role,avatar_url,email,balance,create_time,update_time)
+        values(#{username},#{password},#{phone},#{role},#{avatarUrl},#{email},#{balance},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fangxiong.pojo.User">
@@ -50,6 +52,9 @@
             </if>
         </where>
         ORDER BY id DESC
+    </select>
+    <select id="selectByEmail" resultType="com.fangxiong.pojo.User">
+        SELECT * FROM user WHERE email = #{email}
     </select>
 
     <!-- 封禁：只能封 非管理员 -->

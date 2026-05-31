@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CurrentUserInfo {
-    private Integer id;
-    private Integer role;
+    private Long id;
+    private Long role;
 }

@@ -1,6 +1,7 @@
 package com.fangxiong.controller;
 
 import com.fangxiong.Utils.CodeUtil;
+import com.fangxiong.Utils.CurrentHolder;
 import com.fangxiong.Utils.EmailUtil;
 import com.fangxiong.dto.LoginResult;
 import com.fangxiong.vo.Result;
@@ -12,10 +13,10 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.fangxiong.constants.SystemConstants.CODE_EXPIRE_TIME;
-import static com.fangxiong.constants.SystemConstants.EMAIL_KEY;
+import static com.fangxiong.constants.SystemConstants.*;
 
 
 @Slf4j
@@ -43,7 +44,7 @@ public class LoginController {
 
     @PostMapping("/loginWithCode")
     public Result loginWithCode(@RequestBody LoginDTO loginDTO) {
-        log.info("用户开始登录(通过验证码)：{},邮箱：{}", loginDTO.getUsername(),loginDTO.getEmail());
+        log.info("用户开始登录(通过验证码)：{},邮箱：{}", loginDTO.getCode(),loginDTO.getEmail());
         return loginService.loginWithCode(loginDTO);
     }
 
@@ -54,16 +55,20 @@ public class LoginController {
     }
 
     @PostMapping("/sendEmailCode")
-    public Result sendEmailCode(@RequestBody LoginDTO loginDTO) throws MessagingException {
-        String email = loginDTO.getEmail();
+    public Result sendEmailCode(@RequestParam String email) throws MessagingException {
         if (email == null || email.isEmpty()){
             return Result.error("邮箱不能为空");
         }
+        if(redisUtils.checkSMSCodeSendOverTimes(SMS_CODE_TIMES_KEY+email,SMS_CODE_TIMES_LIMIT,CODE_EXPIRE_TIME)){
+            return Result.error("验证码发送过于频繁，请稍后再试");
+        }
         log.info("用户开始发送邮箱验证码：{}", email);
         String code = CodeUtil.generateSixCode();
-        log.info("将验证码保存到redis中：{}",code);
+        log.info("生成的验证码：{}",code);
         redisUtils.setStringValue(EMAIL_KEY+email, code, CODE_EXPIRE_TIME);
-        emailUtil.sendVerifyCodeHtml(email, code);
+        redisUtils.increaseSMSCodeSendTimes(SMS_CODE_TIMES_KEY+email);
+        log.info("已将验证码保存到redis中：{}",code);
+        //emailUtil.sendVerifyCodeHtml(email, code);
         return Result.success();
     }
 
@@ -74,8 +79,9 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public Result logout(@RequestBody LoginResult loginResult) {
-        log.info("用户开始登出");
+    public Result logout() {
+        LoginResult loginResult = CurrentHolder.getCurrentUserInfo();
+        log.info("用户开始登出：{}",loginResult.getId());
         return loginService.logout(loginResult);
     }
 }
