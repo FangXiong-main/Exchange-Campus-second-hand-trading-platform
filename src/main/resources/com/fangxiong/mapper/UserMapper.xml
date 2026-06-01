@@ -30,7 +30,7 @@
     <select id="selectByName" resultType="com.fangxiong.pojo.User">
         select * from user where username = #{username}
     </select>
-    <select id="selectCount" resultType="java.lang.Integer">
+    <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM user where role = 1
     </select>
 
@@ -56,6 +56,14 @@
     <select id="selectByEmail" resultType="com.fangxiong.pojo.User">
         SELECT * FROM user WHERE email = #{email}
     </select>
+    <select id="selectSchoolList" resultType="java.util.Map">
+        SELECT id, school_name FROM school
+    </select>
+    <select id="selectSchoolId" resultType="java.lang.Long">
+        SELECT id
+        FROM school
+        WHERE school_name = #{school}
+    </select>
 
     <!-- 封禁：只能封 非管理员 -->
     <update id="banUser">
@@ -71,5 +79,17 @@
         SET role = 1, ban_reason = NULL
         WHERE id = #{id}
           AND role != 2
+    </update>
+    <update id="setSchool">
+        UPDATE user
+        SET school = #{school}
+        WHERE id = #{id}
+    </update>
+    <update id="updateInfo">
+        UPDATE user
+        SET username = #{username},
+            avatar_url = #{avatarUrl},
+            school = #{school}
+        WHERE id = #{id}
     </update>
 </mapper>

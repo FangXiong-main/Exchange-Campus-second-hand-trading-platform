@@ -7,8 +7,17 @@ public class SystemConstants {
     public static final String DEFAULT_NAME_PREFIX = "exu_";
     public static final String SMS_CODE_TIMES_KEY = "exchange:sms:email:";
 
+    public static final String SCHOOL_CHANGE_KEY = "exchange:change:school:id:";
+    public static final String REQUEST_INFO_CHANGE_KEY = "exchange:change:info:id:";
+    public static final String REQUEST_INFO_CHANGE_IGNORED_KEY = "exchange:change:info:ignored:id:";
+    public static final String REQUEST_INFO_CHANGE_SUCCESS_KEY = "exchange:change:info:success:id:";
+    public static final String REQUEST_INFO_CHANGE_REJECTED_KEY = "exchange:change:info:rejected:id:";
+
     public static final Integer SMS_CODE_TIMES_LIMIT = 3;
 
-    public static final Long TOKEN_EXPIRE_TIME = (long) (1000 * 60 * 30);
-    public static final Long CODE_EXPIRE_TIME = (long) (1000 * 60 * 5);
+    public static final Long TOKEN_EXPIRE_TIME = 1000L * 60 * 30;
+    public static final Long USER_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;
+    public static final Long CODE_EXPIRE_TIME = 1000L * 60 * 5;
+    public static final Long CHANGE_SCHOOL_LIMIT_TIME = 1000L * 60 * 60 * 24 * 30;
+    public static final Long CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME = 1000L * 60 * 60 * 24;
 }

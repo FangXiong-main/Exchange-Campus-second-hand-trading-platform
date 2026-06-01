@@ -12,6 +12,6 @@ public class LoginResult {
     private String username;
     private String token;
     private Integer role;
-    private String school;
+    private Long school;
     private String avatarUrl;
 }

@@ -28,7 +28,7 @@
                      #{updateTime}
                  )
     </insert>
-    <select id="selectCount" resultType="java.lang.Integer">
+    <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM goods
     </select>
 

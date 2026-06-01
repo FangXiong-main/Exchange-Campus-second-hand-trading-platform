@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Result {
 
-    private Integer code; //编码：1成功，0为失败
+    private Integer code; //编码：200成功，0为失败
     private String msg; //错误信息
     private Object data; //数据
 

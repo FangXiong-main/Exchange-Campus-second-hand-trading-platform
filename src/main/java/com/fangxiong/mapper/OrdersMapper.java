@@ -8,8 +8,8 @@ import java.util.List;
 
 @Mapper
 public interface OrdersMapper {
-    Integer selectCount();
-    Integer countTodayOrder();
+    Long selectCount();
+    Long countTodayOrder();
 
     List<OrderVO> selectMyOrdersById(Long id);
 

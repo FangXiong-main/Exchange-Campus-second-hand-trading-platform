@@ -16,7 +16,7 @@ public class User {
     private String password;
     private String phone;
     private String email;
-    private String school;
+    private Long school;
     private String banReason;
     private Integer role;
     private BigDecimal balance;

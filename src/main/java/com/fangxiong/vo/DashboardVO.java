@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class DashboardVO {
-    private Integer userCount;
-    private Integer goodsCount;
-    private Integer orderCount;
-    private Integer todayOrderCount;
+    private Long userCount;
+    private Long goodsCount;
+    private Long orderCount;
+    private Long todayOrderCount;
 }

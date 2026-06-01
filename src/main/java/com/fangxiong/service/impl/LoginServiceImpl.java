@@ -99,7 +99,7 @@ public class LoginServiceImpl implements LoginService {
         claims.put("username", user.getUsername());
         claims.put("id", user.getId());
         String token = JWTUtils.generateToken(claims);
-        redisUtils.setStringValue(TOKEN_KEY + user.getId(), new LoginToken(user.getUsername(), token), TOKEN_EXPIRE_TIME);
+        redisUtils.setStringValue(TOKEN_KEY + user.getId(), new LoginToken(user.getUsername(), token), USER_TOKEN_EXPIRE_TIME);
         log.info("验证码登录成功，正在保存Token至Redis");
         LoginResult loginResult = new LoginResult();
         loginResult.setId(user.getId());

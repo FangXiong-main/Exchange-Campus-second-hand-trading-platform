@@ -16,6 +16,7 @@ public class OrderDetailsVO {
     private Long buyerId;
     private Integer status;
 
+    private LocalDateTime remainedPayTime;
     private LocalDateTime payTime;
     private LocalDateTime finishTime;
 

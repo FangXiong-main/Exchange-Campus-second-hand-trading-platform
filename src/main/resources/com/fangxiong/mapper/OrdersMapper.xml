@@ -3,10 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fangxiong.mapper.OrdersMapper">
-    <select id="selectCount" resultType="java.lang.Integer">
+    <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM orders
     </select>
-    <select id="countTodayOrder" resultType="java.lang.Integer">
+    <select id="countTodayOrder" resultType="java.lang.Long">
         SELECT COUNT(*) FROM orders
         WHERE DATE(create_time) = CURDATE()
     </select>

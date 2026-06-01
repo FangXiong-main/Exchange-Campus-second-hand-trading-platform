@@ -24,6 +24,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("token");
         String idStr = request.getHeader("id");
+        String username = request.getHeader("username");
         if(idStr==null || idStr.isEmpty())
         {
             log.info("用户未登录");
@@ -31,7 +32,11 @@ public class TokenInterceptor implements HandlerInterceptor {
             return false;
         }
         Long id = Long.parseLong(idStr);
-        String school = request.getHeader("school");
+        String schoolIdStr = request.getHeader("school");
+        Long schoolId = null;
+        if (schoolIdStr!=null&&!schoolIdStr.isEmpty()){
+            schoolId = Long.parseLong(schoolIdStr);
+        }
         Integer role = request.getIntHeader("role");
         LoginToken loginToken;
         log.info("查询Redis获取Token用户ID：{}", id);
@@ -56,7 +61,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return false;
         }
         //校验通过，放行
-        CurrentHolder.setCurrentUser(new LoginResult(id, null, token, role, school, null));
+        CurrentHolder.setCurrentUser(new LoginResult(id, username, token, role, schoolId, null));
         log.info("刷新Token时效:");
         redisUtils.setStringValue(TOKEN_KEY+id, loginToken, TOKEN_EXPIRE_TIME);
         log.info("校验通过，放行");

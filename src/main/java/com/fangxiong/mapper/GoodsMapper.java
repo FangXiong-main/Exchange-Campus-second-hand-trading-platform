@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface GoodsMapper {
-    Integer selectCount();
+    Long selectCount();
     List<RecentGoodsVO> selectRecentGoods();
     List<TodoVO> selectWaitCheck();
     List<Goods> findAuditGoods();
