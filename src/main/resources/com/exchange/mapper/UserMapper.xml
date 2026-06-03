@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.exchange.mapper.UserMapper">
+    <select id="selectById" resultType="com.exchange.pojo.User">
+        select * from user where id=#{id}
+    </select>
+
+    <select id="selectAll" resultType="com.exchange.pojo.User">
+        select * from user
+    </select>
+
+    <insert id="insert" parameterType="com.exchange.pojo.User"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into user(username,password,phone,role,avatar_url,email,balance,create_time,update_time)
+        values(#{username},#{password},#{phone},#{role},#{avatarUrl},#{email},#{balance},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.exchange.pojo.User">
+        update user set username=#{username},password=#{password},phone=#{phone},
+                        role=#{role},avatarUrl=#{avatarUrl} where userId=#{userId}
+    </update>
+
+    <delete id="deleteById">
+        delete from user where userId=#{userId}
+    </delete>
+
+    <select id="selectByName" resultType="com.exchange.pojo.User">
+        select * from user where username = #{username}
+    </select>
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user where role = 1
+    </select>
+
+
+    <!-- 用户列表：排除管理员 role != 2 + 邮箱搜索 + 状态筛选 -->
+    <select id="getUserList" resultType="com.exchange.pojo.User">
+        SELECT * FROM user
+        <where>
+            <!-- 排除管理员：只允许普通用户/封禁用户 -->
+            role != 2
+
+            <if test="email != null and email != ''">
+                AND email LIKE CONCAT('%', #{email}, '%')
+            </if>
+
+            <!-- 状态筛选：1正常 / -1封禁（不冲突） -->
+            <if test="status != null">
+                AND role = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+    <select id="selectByEmail" resultType="com.exchange.pojo.User">
+        SELECT * FROM user WHERE email = #{email}
+    </select>
+    <select id="selectSchoolList" resultType="java.util.Map">
+        SELECT id, school_name FROM school
+    </select>
+    <select id="selectSchoolId" resultType="java.lang.Long">
+        SELECT id
+        FROM school
+        WHERE school_name = #{school}
+    </select>
+
+    <!-- 封禁：只能封 非管理员 -->
+    <update id="banUser">
+        UPDATE user
+        SET role = -1, ban_reason = #{banReason}
+        WHERE id = #{id}
+          AND role != 2
+    </update>
+
+    <!-- 解封：只能解 非管理员 -->
+    <update id="unBanUser">
+        UPDATE user
+        SET role = 1, ban_reason = NULL
+        WHERE id = #{id}
+          AND role != 2
+    </update>
+    <update id="setSchool">
+        UPDATE user
+        SET school = #{school}
+        WHERE id = #{id}
+    </update>
+    <update id="updateInfo">
+        UPDATE user
+        SET username = #{username},
+            avatar_url = #{avatarUrl},
+            school = #{school}
+        WHERE id = #{id}
+    </update>
+</mapper>

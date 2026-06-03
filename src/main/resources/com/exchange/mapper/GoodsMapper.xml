@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.exchange.mapper.GoodsMapper">
+    <insert id="addGoods">
+        INSERT INTO goods (
+            name,
+            price,
+            detail_info,
+            images,
+            type,
+            sale_status,
+            audit_status,
+            user_id,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{name},
+                     #{price},
+                     #{detailInfo},
+                     #{images},
+                     #{type},
+                     #{saleStatus},
+                     #{auditStatus},
+                     #{userId},
+                     #{createTime},
+                     #{updateTime}
+                 )
+    </insert>
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM goods
+    </select>
+
+    <select id="selectRecentGoods" resultType="com.exchange.vo.RecentGoodsVO">
+        SELECT
+            g.name,
+            u.username,
+            g.price,
+            g.create_time AS time
+        FROM goods g
+                 LEFT JOIN `user` u ON g.user_id = u.id
+        ORDER BY g.create_time DESC
+        LIMIT 8
+    </select>
+
+    <select id="selectWaitCheck" resultType="com.exchange.vo.TodoVO">
+        SELECT
+            id,
+            CONCAT('商品【', name, '】待审核') AS content,
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS time,
+            0 AS status
+        FROM goods
+        WHERE audit_status = 0
+        ORDER BY create_time DESC
+        LIMIT 6
+    </select>
+
+    <select id="findAuditGoods" resultType="com.exchange.pojo.Goods">
+        SELECT
+        g.*,
+        u.username  <!-- 这里查到发布人名字 -->
+        FROM goods g
+        LEFT JOIN `user` u ON g.user_id = u.id
+        WHERE g.audit_status = 0
+        ORDER BY g.create_time DESC
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findById" resultType="com.exchange.pojo.Goods">
+        SELECT
+        g.id,
+        g.name,
+        g.price,
+        g.detail_info,
+        g.images,
+        g.type,
+        g.reject_reason,
+        g.sale_status,
+        g.audit_status,
+        g.user_id,
+        g.create_time,
+        g.update_time,
+
+        u.username,
+        u.avatar_url
+
+        FROM goods g
+        LEFT JOIN user u ON g.user_id = u.id
+        WHERE g.id = #{id}
+    </select>
+
+    <!-- 审核通过 -->
+    <update id="updateAuditPass">
+        UPDATE goods
+        SET audit_status = 1, sale_status = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 审核驳回 -->
+    <update id="updateAuditReject">
+        UPDATE goods
+        SET audit_status = 2, reject_reason = #{rejectReason}
+        WHERE id = #{id}
+    </update>
+    <update id="updateGoods">
+        UPDATE goods
+        SET
+            name = #{name},
+            price = #{price},
+            images = #{images},
+            detail_info = #{detailInfo},
+            audit_status = #{auditStatus},
+            type = #{type},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    <update id="updateSaleStatus">
+        UPDATE goods
+        SET sale_status = #{saleStatus}
+        WHERE id = #{id}
+    </update>
+
+    <select id="findRejectedGoods" resultType="com.exchange.pojo.Goods">
+        SELECT
+            g.*,
+            u.username
+        FROM goods g
+                 LEFT JOIN user u ON g.user_id = u.id
+        WHERE g.audit_status = 2
+        ORDER BY g.create_time DESC
+    </select>
+    <select id="selectMyPublish" parameterType="java.lang.Long" resultType="com.exchange.pojo.Goods">
+        SELECT * FROM goods
+        WHERE user_id = #{id}
+        ORDER BY create_time DESC
+    </select>
+    <select id="selectMyFavorite" resultType="com.exchange.pojo.Goods">
+        SELECT
+            g.id,
+            g.name,
+            g.price,
+            g.images,
+            g.type,
+            g.sale_status,
+            g.audit_status,
+            g.user_id,
+            g.create_time
+        FROM collect c
+                 INNER JOIN goods g ON c.goods_id = g.id
+        WHERE c.user_id = #{userId}
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM goods WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.exchange.mapper.PostMapper">
+    <insert id="addComment">
+        INSERT INTO post_comment (
+            post_id,
+            user_id,
+            content,
+            create_time
+        ) VALUES (
+                     #{id},
+                     #{userId},
+                     #{content},
+                     #{createTime}
+                 )
+    </insert>
+    <insert id="publishPost">
+        INSERT INTO post (
+            content,
+            user_id,
+            images,
+            type,
+            create_time
+        ) VALUES (
+                     #{content},
+                     #{userId},
+                     #{images},
+                     #{type},
+                     #{createTime}
+                 )
+    </insert>
+    <delete id="deletePost">
+        DELETE FROM post_comment WHERE post_id = #{postId} and user_id = #{userId};
+    </delete>
+
+    <delete id="deletePostComment">
+        DELETE FROM post WHERE id = #{postId} and user_id = #{userId};
+    </delete>
+
+
+    <select id="getPostList" resultType="com.exchange.dto.PostDTO">
+        SELECT
+            p.id,
+            u.username,
+            u.avatar_url AS avatarUrl,
+            p.content,
+            p.user_id AS userId,
+            p.view_count AS viewCount,
+            p.images,
+            p.type,
+            p.create_time AS createTime,
+            p.update_time AS updateTime,
+            (SELECT COUNT(*) FROM post_comment pc WHERE pc.post_id = p.id) AS commentCount
+        FROM
+            post p
+                LEFT JOIN
+            user u ON p.user_id = u.id
+        WHERE p.type = #{type}
+        ORDER BY
+            p.create_time DESC
+    </select>
+    <select id="getCommentList" resultType="com.exchange.dto.PostCommentDTO">
+        SELECT
+            pc.id,
+            u.username,
+            pc.content,
+            u.avatar_url AS avatarUrl,
+            pc.create_time AS createTime
+        FROM
+            post_comment pc
+                LEFT JOIN
+            user u ON pc.user_id = u.id
+        WHERE
+            pc.post_id = #{postId}
+        ORDER BY
+            pc.create_time DESC
+    </select>
+    <update id="addViewCount">
+        UPDATE post
+        SET view_count = view_count + 1
+        WHERE id = #{postId}
+    </update>
+</mapper>
