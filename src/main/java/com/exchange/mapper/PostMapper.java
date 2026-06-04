@@ -4,6 +4,7 @@ import com.exchange.dto.PostCommentDTO;
 import com.exchange.dto.PostDTO;
 import com.exchange.pojo.Post;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface PostMapper {
 
     void addViewCount(Long postId);
 
-    void deletePost(Long postId, Long userId);
+    void deletePost(@Param("postId") Long postId,@Param("userId") Long userId);
 
-    void deletePostComment(Long postId, Long userId);
+    void deletePostComment(@Param("postId") Long postId, @Param("userId") Long userId);
 }

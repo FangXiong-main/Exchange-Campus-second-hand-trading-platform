@@ -2,7 +2,6 @@ package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.service.OrderService;
-import com.exchange.vo.OrderDetailsVO;
 import com.exchange.vo.OrderVO;
 import com.exchange.vo.PageResult;
 import com.exchange.vo.Result;
@@ -12,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -30,14 +30,34 @@ public class OrderController {
     }
     @GetMapping("/orderDetail")
     public Result getDetail(@RequestParam Long id) {
-        OrderDetailsVO vo = orderService.getOrderDetails(id);
-        return Result.success(vo);
+        return Result.success(orderService.getOrderDetails(id));
     }
 
     @PostMapping("/cancel")
     public Result cancel(@RequestParam Long id) {
-        orderService.cancelOrder(id);
-        return Result.success();
+        return orderService.cancelOrder(id);
+    }
+
+    @PostMapping("/createOrder")
+    public Result createOrder(@RequestBody Map<String, Object> params) {
+        Long goodsId = Long.parseLong(params.get("goodsId").toString());
+        Integer payType = Integer.parseInt(params.get("payType").toString());
+        return orderService.createOrder(goodsId, payType);
+    }
+
+    @PostMapping("/confirm")
+    public Result confirm(@RequestParam Long id) {
+        return orderService.confirmOrder(id);
+    }
+
+    @GetMapping("/getUnresolvedOrdersCount")
+    public Result getUnresolvedOrdersCount() {
+        return Result.success(orderService.getUnresolvedOrdersCount());
+    }
+
+    @PostMapping("/delete")
+    public Result delete(@RequestParam Long id) {
+        return orderService.deleteOrder(id);
     }
 
 }

@@ -22,4 +22,10 @@ public interface UserService {
     Result getInfoChangePage(Integer pageNum, Integer pageSize);
 
     Result auditInfoChange(UserInfoChangeAuditDTO userInfoChangeAuditDTO);
+
+    Result getExcWalletBalance();
+
+    Integer getUnresolvedOrdersCount();
+
+    Result getUserEXCWalletList(Integer page, Integer pageSize);
 }

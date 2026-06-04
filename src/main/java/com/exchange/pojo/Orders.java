@@ -4,20 +4,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Orders {
-    private Long id;
+    private String id;
     private Long goodsId;
     private Long buyerId;
+    private Long sellerId;
+    private Integer payType;
+
+    private String goodsName;
+    private BigDecimal goodsPrice;
+    private String goodsImage;
+    private String goodsDetail; // 新增
+    private String sellerName;  // 新增
+
     private Integer status;
 
-    private LocalDateTime payTime;     // 支付时间
-    private LocalDateTime finishTime;  // 完成时间
-
+    private LocalDateTime payTime;
+    private LocalDateTime finishTime;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

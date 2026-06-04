@@ -93,5 +93,20 @@ public class UserController {
         return userService.getSchoolList();
     }
 
+    @GetMapping("/getExcWalletBalance")
+    public Result getExcWalletBalance() {
+        return userService.getExcWalletBalance();
+    }
+
+    @GetMapping("/getUnresolvedOrdersCount")
+    public Result getUnresolvedOrdersCount() {
+        return Result.success(userService.getUnresolvedOrdersCount());
+    }
+
+    @GetMapping("/getUserEXCWalletList")
+    public Result getUserEXCWalletList(@RequestParam(defaultValue = "1") Integer page,
+                                     @RequestParam(defaultValue = "10") Integer pageSize) {
+        return userService.getUserEXCWalletList(page, pageSize);
+    }
 
 }

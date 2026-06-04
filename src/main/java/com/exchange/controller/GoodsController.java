@@ -101,7 +101,7 @@ public class GoodsController {
 
     @GetMapping("/goodsDetail")
     public Result getGoodsDetail(@RequestParam Long id){
-        return Result.success(goodsService.findById(id));
+        return Result.success(goodsService.getGoodsDetails(id));
     }
 
     @PostMapping("/updateGoods")
@@ -138,6 +138,21 @@ public class GoodsController {
         goods.setSaleStatus(0);
         goodsService.addGoods(goods);
         return Result.success();
+    }
+
+    @GetMapping("/newGoodsPage")
+    public Result newGoodsPage(
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return goodsService.getNewGoodsPage(pageNum, pageSize);
+    }
+
+    @PostMapping("/favorite/toggle")
+    public Result favoriteToggle(@RequestBody Map<String, Object> params) {
+        Long id = Long.valueOf(params.get("id").toString());
+        Long type = Long.valueOf(params.get("type").toString()); // 0 取消收藏 1 收藏
+        return goodsService.favoriteToggle(id, type);
     }
 
 }

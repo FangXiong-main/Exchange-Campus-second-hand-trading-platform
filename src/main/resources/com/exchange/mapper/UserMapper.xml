@@ -17,6 +17,10 @@
         insert into user(username,password,phone,role,avatar_url,email,balance,create_time,update_time)
         values(#{username},#{password},#{phone},#{role},#{avatarUrl},#{email},#{balance},#{createTime},#{updateTime})
     </insert>
+    <insert id="addNewWalletUseLog">
+        insert into wallet(user_id,type,price,create_time)
+        values(#{userId},#{type},#{price},#{createTime})
+    </insert>
 
     <update id="update" parameterType="com.exchange.pojo.User">
         update user set username=#{username},password=#{password},phone=#{phone},
@@ -64,6 +68,30 @@
         FROM school
         WHERE school_name = #{school}
     </select>
+    <select id="getUserBalance" resultType="java.math.BigDecimal">
+        SELECT balance
+        FROM user
+        WHERE id = #{id}
+    </select>
+    <select id="getUnresolvedOrdersCount" resultType="java.lang.Integer">
+
+    </select>
+    <select id="selectBalanceById" resultType="java.math.BigDecimal">
+        SELECT balance
+        FROM user
+        WHERE id = #{id}
+    </select>
+    <select id="findSchoolAdminId" resultType="java.lang.Long">
+        SELECT id
+        FROM user
+        WHERE school = #{schoolId}
+          AND role = 2
+    </select>
+    <select id="getUserEXCWalletList" resultType="com.exchange.dto.WalletDetailDTO">
+        SELECT type, price, create_time
+        FROM wallet
+        WHERE user_id = #{id} ORDER BY create_time DESC
+    </select>
 
     <!-- 封禁：只能封 非管理员 -->
     <update id="banUser">
@@ -90,6 +118,11 @@
         SET username = #{username},
             avatar_url = #{avatarUrl},
             school = #{school}
+        WHERE id = #{id}
+    </update>
+    <update id="updateBalance">
+        UPDATE user
+        SET balance = #{balance}
         WHERE id = #{id}
     </update>
 </mapper>

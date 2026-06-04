@@ -3,6 +3,7 @@ package com.exchange.service.impl;
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.dto.LoginResult;
 import com.exchange.dto.UserInfoChangeAuditDTO;
+import com.exchange.dto.WalletDetailDTO;
 import com.exchange.mapper.UserMapper;
 import com.exchange.pojo.User;
 import com.exchange.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result unBanUser(Long id) {
         userMapper.unBanUser(id);
+        redisUtils.remove(ACCOUNT_BANDED_KEY+id);
         return Result.success();
     }
 
@@ -202,5 +205,25 @@ public class UserServiceImpl implements UserService {
         redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
         redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
         return Result.success();
+    }
+
+    @Override
+    public Result getExcWalletBalance() {
+        BigDecimal userBalance = userMapper.getUserBalance(CurrentHolder.getCurrentUserInfo().getId());
+        return Result.success(userBalance);
+    }
+
+    @Override
+    public Integer getUnresolvedOrdersCount() {
+        return userMapper.getUnresolvedOrdersCount();
+    }
+
+    @Override
+    public Result getUserEXCWalletList(Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        List<WalletDetailDTO> walletDetailDTOS = userMapper.getUserEXCWalletList(CurrentHolder.getCurrentUserInfo().getId());
+        PageInfo<WalletDetailDTO> pageInfo = new PageInfo<>(walletDetailDTOS);
+        PageResult<WalletDetailDTO> pageResult = new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
+        return Result.success(pageResult);
     }
 }

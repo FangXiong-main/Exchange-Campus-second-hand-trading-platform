@@ -75,7 +75,7 @@
         WHERE
             pc.post_id = #{postId}
         ORDER BY
-            pc.create_time DESC
+            pc.create_time ASC
     </select>
     <update id="addViewCount">
         UPDATE post

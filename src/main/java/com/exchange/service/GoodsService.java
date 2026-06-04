@@ -1,6 +1,9 @@
 package com.exchange.service;
 
+import com.exchange.dto.GoodsDTO;
 import com.exchange.pojo.Goods;
+import com.exchange.vo.GoodsDetailsVO;
+import com.exchange.vo.Result;
 
 import java.util.List;
 
@@ -24,4 +27,10 @@ public interface GoodsService {
     void updateSaleStatus(Long id, Integer saleStatus);
 
     void addGoods(Goods goods);
+
+    Result getNewGoodsPage(Integer pageNum, Integer pageSize);
+
+    Result favoriteToggle(Long id, Long type);
+
+    GoodsDetailsVO getGoodsDetails(Long id);
 }

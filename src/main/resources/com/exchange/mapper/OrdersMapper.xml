@@ -3,6 +3,42 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.exchange.mapper.OrdersMapper">
+    <insert id="createOrder">
+        INSERT INTO orders (
+            id,
+            goods_id,
+            buyer_id,
+            seller_id,
+            pay_type,
+            goods_name,
+            goods_price,
+            goods_image,
+            goods_detail,
+            seller_name,
+            status,
+            pay_time,
+            finish_time,
+            create_time,
+            update_time
+        ) VALUES (#{generatedOrderId},
+                  #{orders.goodsId},
+                  #{orders.buyerId},
+                  #{orders.sellerId},
+                  #{orders.payType},
+                  #{orders.goodsName},
+                  #{orders.goodsPrice},
+                  #{orders.goodsImage},
+                  #{orders.goodsDetail},
+                  #{orders.sellerName},
+                  #{orders.status},
+                  #{orders.payTime},
+                  #{orders.finishTime},
+                  #{orders.createTime},
+                  #{orders.updateTime})
+    </insert>
+    <delete id="deleteById">
+        DELETE FROM orders WHERE id = #{id}
+    </delete>
     <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM orders
     </select>
@@ -13,51 +49,65 @@
     <select id="selectMyOrdersById" resultType="com.exchange.vo.OrderVO">
         SELECT
         o.id,
-        g.name goodsName,
-        g.images,
-        g.price,
+        o.goods_name     AS goodsName,
+        o.goods_image    AS images,
+        o.goods_price    AS price,
         o.status,
-        o.create_time createTime,
-        o.buyer_id buyerId,
-        g.user_id sellerId
+        o.create_time    AS createTime,
+        o.buyer_id       AS buyerId,
+        o.seller_id      AS sellerId
         FROM orders o
-        LEFT JOIN goods g ON o.goods_id = g.id
         WHERE o.buyer_id = #{id}    <!-- 我买到的 -->
-        OR g.user_id = #{id}    <!-- 我卖出的（关键！！！） -->
+        OR o.seller_id = #{id}    <!-- 我卖出的 -->
         ORDER BY o.create_time DESC
     </select>
 
-    <select id="getOrderDetailsById" resultType="com.exchange.vo.OrderDetailsVO">
+    <select id="getOrderDetailsById" resultType="com.exchange.pojo.Orders">
         SELECT
-            o.id,
-            o.goods_id          AS goodsId,
-            o.buyer_id          AS buyerId,
-            o.status,
-            o.pay_time          AS payTime,
-            o.finish_time       AS finishTime,
-            o.create_time       AS createTime,
-            o.update_time       AS updateTime,
-
-            g.name              AS name,
-            g.price             AS price,
-            g.detail_info       AS detailInfo,
-            g.images            AS images,
-
-            u.id                AS sellerId,
-            u.username          AS sellerName,
-            u.avatar_url        AS avatarUrl
-
+        o.id,
+        o.goods_id          AS goodsId,
+        o.buyer_id          AS buyerId,
+        o.seller_id         AS sellerId,
+        o.pay_type          AS payType,
+        o.goods_name        AS goodsName,
+        o.goods_price       AS goodsPrice,
+        o.goods_image       AS goodsImage,
+        o.goods_detail      AS goodsDetail,  <!-- 新增 -->
+        o.seller_name       AS sellerName,   <!-- 新增 -->
+        o.status,
+        o.pay_time          AS payTime,
+        o.finish_time       AS finishTime,
+        o.create_time       AS createTime,
+        o.update_time       AS updateTime
         FROM orders o
-                 LEFT JOIN goods g ON o.goods_id = g.id
-                 LEFT JOIN user u  ON g.user_id = u.id
         WHERE o.id = #{orderId}
+        AND (o.buyer_id = #{userId} OR o.seller_id = #{userId})
+    </select>
+    <select id="findById" resultType="com.exchange.pojo.Orders">
+        SELECT * FROM orders WHERE id = #{id}
+    </select>
+
+    <select id="getUnresolvedOrdersCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE (buyer_id = #{userId} OR seller_id = #{userId})
+          AND status IN (1, 2)
     </select>
 
     <!-- 取消订单 -->
     <update id="cancelOrder">
         UPDATE orders
-        SET status = 2, update_time = NOW()
+        SET status = 3, finish_time = #{finishTime}, update_time = #{finishTime}
         WHERE id = #{orderId}
+    </update>
+
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET status = #{status},update_time = #{updateTime}
+        <if test="finishTime != null">
+            , finish_time = #{finishTime}
+        </if>
+        WHERE id = #{id}
     </update>
 
 

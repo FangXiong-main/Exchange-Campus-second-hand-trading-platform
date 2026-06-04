@@ -1,11 +1,14 @@
 package com.exchange.constants;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class SystemConstants {
     public static final String TOKEN_KEY = "exchange:login:user:tokens:id:";
     public static final String EMAIL_KEY = "exchange:login:user:email:";
     public static final String ACCOUNT_BANDED_KEY = "exchange:login:user:banded:id:";
 
-    public static final String DEFAULT_NAME_PREFIX = "exu_";
+    public static final String DEFAULT_NAME_PREFIX = "exc_";
     public static final String SMS_CODE_TIMES_KEY = "exchange:sms:email:";
 
     public static final String SCHOOL_CHANGE_KEY = "exchange:change:school:id:";
@@ -17,7 +20,21 @@ public class SystemConstants {
 
     public static final String USER_POST_PREFERENCE_TYPES_KEY = "exchange:user:preference:post:types:id:";
 
+    public static final String USER_PURCHASE_GOODS_LOCK_KEY = "exchange:user:purchase:goods:lock:id:";
+    public static final String USER_CONFIRM_ORDER_LOCK_KEY = "exchange:user:confirm:order:lock:id:";
+    public static final String USER_CANCEL_ORDER_LOCK_KEY = "exchange:user:confirm:order:cancel:lock:id:";
+
+    public static final String EXCHANGE_ORDER_INCR_ID_KEY_PREFIX = "exchange:order:icr:id:";
+
+    public static final String EXCHANGE_UUID_TIME_KEY_FORMAT = "yyyy:MM";
+
+    public static final BigDecimal EXCHANGE_DEDUCTION_RATE = BigDecimal.valueOf(0.01);
     public static final Integer SMS_CODE_TIMES_LIMIT = 3;
+    public static final LocalDateTime EXCHANGE_ORDER_START_TIME = LocalDateTime.now();
+    public static final Integer EXCHANGE_ORDER_ID_TIMESTAMP_LENGTH = 23;
+    public static final Integer EXCHANGE_ORDER_ID_MACHINE_CODE_LENGTH = 8;
+    public static final Integer EXCHANGE_ORDER_ID_SEQUENCE_LENGTH = 32;
+    public static final Long EXCHANGE_MACHINE_CODE = 20000828L;
 
     public static final Long TOKEN_EXPIRE_TIME = 1000L * 60 * 30;
     public static final Long USER_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;
