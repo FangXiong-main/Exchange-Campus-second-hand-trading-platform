@@ -14,7 +14,6 @@ public class UserInfoChangeAuditDTO {
     private String username;
     private String avatarUrl;
     private Long school;
-    private String originalUsername;
     private String email;
     private Integer changedStatus;
     private Integer auditStatus;  //0= 待审核 1=审核通过 2=审核未通过

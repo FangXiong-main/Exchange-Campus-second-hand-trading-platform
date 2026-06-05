@@ -6,15 +6,12 @@ spring:
   application:
     name: ExchangeCampusSecondHandTradingPlatform
 
-  # 数据库连接（适配本地）
   datasource:
-    # 注释掉了Druid，保持官方默认连接池即可
-    # type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://localhost:3306/exchange_db_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: abc200519P
-  # Redis 配置
+
   data:
     redis:
       host: 1.92.153.209
@@ -38,15 +35,15 @@ spring:
   # 文件上传配置
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 10MB
+      max-request-size: 30MB
 
 # 事务日志
 logging:
   level:
     org.springframework.transaction: debug
 
-# MyBatis 配置（和你的pojo包路径完全匹配）
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.fangxiong.pojo
@@ -54,7 +51,6 @@ mybatis:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-# 文件路径（修正了localhost前缀）
-fangxiong:
-  file:
-    path: /Users/fangxiong/Documents/Images
+exchange_file:
+  local-path: /Users/fangxiong/Documents/ExchangeUploads/
+  prefix: /ExchangeUploads/

@@ -119,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
                     BigDecimal sellerIncome = goodsPrice.subtract(exchangeIncome);
                     BigDecimal sellerOriginalBalance = userMapper.selectBalanceById(order.getSellerId());
                     userMapper.updateBalance(order.getSellerId(),sellerOriginalBalance.add(sellerIncome));
-                    userMapper.addNewWalletUseLog(order.getSellerId(),2,sellerIncome,LocalDateTime.now());
+                    userMapper.addNewWalletUseLog(order.getSellerId(),2,goodsPrice,LocalDateTime.now());
                     userMapper.addNewWalletUseLog(order.getSellerId(),5,exchangeIncome,LocalDateTime.now());
                     Long schoolAdminId = userMapper.findSchoolAdminId(CurrentHolder.getCurrentUserInfo().getSchool());
                     userMapper.updateBalance(schoolAdminId,userMapper.selectBalanceById(schoolAdminId).add(exchangeIncome));

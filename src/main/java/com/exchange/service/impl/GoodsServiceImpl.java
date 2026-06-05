@@ -1,6 +1,7 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.GoodsDTO;
 import com.exchange.mapper.GoodsMapper;
 import com.exchange.pojo.Goods;
@@ -19,6 +20,9 @@ import java.util.List;
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
+    @Resource
+    private MoveFileUtil moveFileUtil;
+
     @Resource
     private GoodsMapper goodsMapper;
 
@@ -82,8 +86,14 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public void addGoods(Goods goods) {
+    public Result addGoods(Goods goods) {
+        String realImageUrl = moveFileUtil.moveTempToReal(goods.getImages());
+        if (realImageUrl == null){
+            return Result.error("图片转移失败，保存发布商品失败");
+        }
+        goods.setImages(realImageUrl);
         goodsMapper.addGoods(goods);
+        return Result.success();
     }
 
     @Override

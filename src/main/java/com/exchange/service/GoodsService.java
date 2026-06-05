@@ -26,7 +26,7 @@ public interface GoodsService {
 
     void updateSaleStatus(Long id, Integer saleStatus);
 
-    void addGoods(Goods goods);
+    Result addGoods(Goods goods);
 
     Result getNewGoodsPage(Integer pageNum, Integer pageSize);
 

@@ -1,6 +1,7 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.LoginResult;
 import com.exchange.dto.UserInfoChangeAuditDTO;
 import com.exchange.dto.WalletDetailDTO;
@@ -30,6 +31,9 @@ import static com.exchange.constants.SystemConstants.*;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    @Resource
+    private MoveFileUtil moveFileUtil;
 
     @Resource
     private RedisUtils redisUtils;
@@ -91,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result updateInfo(Long id, String username, String avatarUrl, Long school) {
+    public Result updateInfo(Long id,String username,String avatarUrl, Long school) {
         Long schoolId = redisUtils.getStringValue(SCHOOL_CHANGE_KEY + id, Long.class);
         if(schoolId!=null&&!schoolId.equals(school))
         {
@@ -103,7 +107,7 @@ public class UserServiceImpl implements UserService {
         }
         redisUtils.setStringValue(REQUEST_INFO_CHANGE_IGNORED_KEY+id, "1");
         redisUtils.setStringValue(SCHOOL_CHANGE_KEY+id, "1", CHANGE_SCHOOL_LIMIT_TIME);
-        redisUtils.setStringValue(REQUEST_INFO_CHANGE_KEY+id, new UserInfoChangeAuditDTO(CurrentHolder.getCurrentUserInfo().getId(), username, CurrentHolder.getCurrentUserInfo().getAvatarUrl(), CurrentHolder.getCurrentUserInfo().getSchool(), CurrentHolder.getCurrentUserInfo().getUsername(), null, 1, 0,LocalDateTime.now(),null, null),CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME);
+        redisUtils.setStringValue(REQUEST_INFO_CHANGE_KEY+id, new UserInfoChangeAuditDTO(CurrentHolder.getCurrentUserInfo().getId(),username,avatarUrl,school, null, 1, 0,LocalDateTime.now(),null, null),CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME);
         return Result.success();
     }
 

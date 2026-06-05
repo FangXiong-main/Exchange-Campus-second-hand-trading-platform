@@ -20,7 +20,7 @@ public interface GoodsMapper {
     List<Goods> findAuditGoods();
     Goods findById(Long id);
 
-    void updateAuditPass(@Param("id") Integer id);
+    void updateAuditPass(Integer id);
 
     void updateAuditReject(
             @Param("id") Integer id,
@@ -32,14 +32,14 @@ public interface GoodsMapper {
     List<Goods> selectMyPublish(Long id);
     List<Goods> selectMyFavorite(Long id);
 
-    void updateGoods(@Param("goods") Goods goods);
+    void updateGoods(Goods goods);
 
     void updateSaleStatus(
             @Param("id") Long id,
             @Param("saleStatus") Integer saleStatus
     );
 
-    void addGoods(@Param("goods") Goods goods);
+    void addGoods(Goods goods);
 
     List<GoodsDTO> selectNewGoodsPage();
 

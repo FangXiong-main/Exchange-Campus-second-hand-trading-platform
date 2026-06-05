@@ -25,6 +25,7 @@ public class SystemConstants {
     public static final String USER_CANCEL_ORDER_LOCK_KEY = "exchange:user:confirm:order:cancel:lock:id:";
 
     public static final String EXCHANGE_ORDER_INCR_ID_KEY_PREFIX = "exchange:order:icr:id:";
+    public static final String EXCHANGE_FILE_INCR_ID_KEY_PREFIX = "exchange:file:icr:id:";
 
     public static final String EXCHANGE_UUID_TIME_KEY_FORMAT = "yyyy:MM";
 
@@ -34,6 +35,9 @@ public class SystemConstants {
     public static final Integer EXCHANGE_ORDER_ID_TIMESTAMP_LENGTH = 23;
     public static final Integer EXCHANGE_ORDER_ID_MACHINE_CODE_LENGTH = 8;
     public static final Integer EXCHANGE_ORDER_ID_SEQUENCE_LENGTH = 32;
+    public static final Integer EXCHANGE_FILE_ID_TIMESTAMP_LENGTH = 20;
+    public static final Integer EXCHANGE_FILE_ID_MACHINE_CODE_LENGTH = 8;
+    public static final Integer EXCHANGE_FILE_ID_SEQUENCE_LENGTH = 35;
     public static final Long EXCHANGE_MACHINE_CODE = 20000828L;
 
     public static final Long TOKEN_EXPIRE_TIME = 1000L * 60 * 30;
