@@ -203,6 +203,14 @@
     <select id="selectSellerId" resultType="java.lang.Long">
         SELECT user_id FROM goods WHERE id = #{goodsId}
     </select>
+    <select id="selectGoodsIsExist" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+        SELECT 1 FROM goods WHERE id = #{id}
+        )
+    </select>
+    <select id="selectUserGoodsImages" resultType="java.lang.String">
+        SELECT images FROM goods WHERE user_id = #{id}
+    </select>
 
     <!-- 删除 -->
     <delete id="deleteById">
@@ -211,5 +219,8 @@
 
     <delete id="deleteFavoriteGoods">
         DELETE FROM collect WHERE user_id = #{userId} AND goods_id = #{id}
+    </delete>
+    <delete id="deleteUserInfoById">
+        DELETE FROM goods WHERE user_id = #{id}
     </delete>
 </mapper>

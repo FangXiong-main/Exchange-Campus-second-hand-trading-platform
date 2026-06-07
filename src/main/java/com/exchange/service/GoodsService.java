@@ -16,7 +16,7 @@ public interface GoodsService {
     List<Goods> findRejectedGoods();
 
     // 删除商品
-    void deleteById(Long id);
+    Result deleteById(Long id);
 
     List<Goods> myPublish(Long id);
 

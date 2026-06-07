@@ -1,6 +1,8 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.DeleteFileUtil;
+import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.PostCommentDTO;
 import com.exchange.dto.PostDTO;
 import com.exchange.mapper.PostMapper;
@@ -23,6 +25,12 @@ import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    @Resource
+    private DeleteFileUtil deleteFileUtil;
+
+    @Resource
+    private MoveFileUtil moveFileUtil;
 
     @Resource
     private PostMapper postMapper;
@@ -64,6 +72,8 @@ public class PostServiceImpl implements PostService {
     public Result publishPost(PostDTO postDTO) {
         postDTO.setUserId(CurrentHolder.getCurrentUserInfo().getId());
         postDTO.setCreateTime(LocalDateTime.now());
+        String realUrl = moveFileUtil.moveTempToReal(postDTO.getImages());
+        postDTO.setImages(realUrl);
         postMapper.publishPost(postDTO);
         return Result.success();
     }
@@ -77,6 +87,11 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Result deletePost(Long postId) {
+        String postImagesUrl = postMapper.selectPostImagesUrl(postId);
+        boolean isDeleted = deleteFileUtil.deleteFile(postImagesUrl);
+        if (!isDeleted) {
+            return Result.error("删除失败");
+        }
         postMapper.deletePost(postId, CurrentHolder.getCurrentUserInfo().getId());
         postMapper.deletePostComment(postId, CurrentHolder.getCurrentUserInfo().getId());
         return Result.success();

@@ -1,6 +1,7 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.DeleteFileUtil;
 import com.exchange.mapper.GoodsMapper;
 import com.exchange.mapper.OrdersMapper;
 import com.exchange.mapper.UserMapper;
@@ -26,6 +27,9 @@ import static com.exchange.constants.SystemConstants.*;
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
+    @Resource
+    private DeleteFileUtil deleteFileUtil;
+
     @Resource
     private RedisUtils redisUtils;
 
@@ -160,7 +164,23 @@ public class OrderServiceImpl implements OrderService {
         } else if (!order.getBuyerId().equals(CurrentHolder.getCurrentUserInfo().getId())) {
             return Result.error("只有买家才能删除订单");
         }
-        ordersMapper.deleteById(id);
+        try {
+            if (!redisUtils.enableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ order.getGoodsId())) {
+                return Result.error("删除失败，请稍后重试");
+            }
+            Boolean isExist = goodsMapper.selectGoodsIsExist(order.getGoodsId());
+            if (!isExist){
+                if (!deleteFileUtil.deleteFile(order.getGoodsImage())) {
+                    return Result.error("删除失败");
+                }
+            }
+            ordersMapper.deleteById(id);
+        } catch (Exception e) {
+            log.info("删除订单出现错误:{}",e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
+            redisUtils.disableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id);
+        }
         return Result.success();
     }
 

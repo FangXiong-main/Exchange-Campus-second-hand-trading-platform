@@ -52,5 +52,6 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 exchange_file:
+  delete-file-path-prefix: /Users/fangxiong/Documents/
   local-path: /Users/fangxiong/Documents/ExchangeUploads/
   prefix: /ExchangeUploads/

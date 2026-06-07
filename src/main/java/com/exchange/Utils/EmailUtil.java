@@ -17,6 +17,53 @@ public class EmailUtil {
 
     private static final String FROM = "1255404327@qq.com";
 
+    public void sendChangePasswordCode(String to, String code) throws MessagingException{
+        String subject = "Exchange！校园二手交易平台 - 修改密码验证码";
+
+        String html = """
+            <div style="max-width:600px; margin:30px auto; background:#ffffff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:30px; font-family: 'Microsoft YaHei', sans-serif;">
+                <div style="text-align:center; font-size:18px; font-weight:bold; color:#2F4056; padding-bottom:16px; border-bottom:1px solid #eee;">
+                    Exchange！校园二手交易平台
+                </div>
+                <div style="margin-top:24px; font-size:15px; color:#333; line-height:1.8;">
+                    <p>您好！</p>
+                    <p>您本次修改密码的验证码是：</p>
+                    <div style="font-size:24px; font-weight:bold; color:#0066CC; margin:10px 0; letter-spacing: 2px;">
+                        %s
+                    </div>
+                    <p>该验证码 5 分钟内有效，请勿泄露给他人，如果非本人操作请立刻联系管理员操作，您的账号已被其他人成功登录。</p>
+                </div>
+                <div style="margin-top:30px; text-align:center; font-size:14px; color:#999; padding-top:16px; border-top:1px solid #eee;">
+                    Exchange！运营团队
+                </div>
+            </div>
+            """.formatted(code);
+        sendCode(to,subject,html);
+    }
+
+    public void sendLogOffCode(String to, String code) throws MessagingException{
+        String subject = "Exchange！校园二手交易平台 - 注销账号验证码";
+        String html = """
+        <div style="max-width:600px; margin:30px auto; background:#ffffff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:30px; font-family: 'Microsoft YaHei', sans-serif;">
+            <div style="text-align:center; font-size:18px; font-weight:bold; color:#2F4056; padding-bottom:16px; border-bottom:1px solid #eee;">
+                Exchange！校园二手交易平台
+            </div>
+            <div style="margin-top:24px; font-size:15px; color:#333; line-height:1.8;">
+                <p>您好！</p>
+                <p>您<span style="color:#ff3333; font-weight:bold;">注销账号</span>的验证码是：</p>
+                <div style="font-size:24px; font-weight:bold; color:#0066CC; margin:10px 0; letter-spacing: 2px;">
+                    %s
+                </div>
+                <p>该验证码 5 分钟内有效，请勿泄露给他人，感谢您的使用，如果我们变得更好，记得回来哦。</p>
+            </div>
+            <div style="margin-top:30px; text-align:center; font-size:14px; color:#999; padding-top:16px; border-top:1px solid #eee;">
+                Exchange！运营团队
+            </div>
+        </div>
+        """.formatted(code);
+        sendCode(to,subject,html);
+    }
+
     public void sendVerifyCodeHtml(String to, String code) throws MessagingException {
         String subject = "Exchange！校园二手交易平台 - 登录验证码";
 
@@ -31,14 +78,17 @@ public class EmailUtil {
                     <div style="font-size:24px; font-weight:bold; color:#0066CC; margin:10px 0; letter-spacing: 2px;">
                         %s
                     </div>
-                    <p>该验证码 5 分钟内有效，请勿泄露给他人。</p>
+                    <p>该验证码 5 分钟内有效，请勿泄露给他人，如果非本人操作请忽略本邮件。</p>
                 </div>
                 <div style="margin-top:30px; text-align:center; font-size:14px; color:#999; padding-top:16px; border-top:1px solid #eee;">
                     Exchange！运营团队
                 </div>
             </div>
             """.formatted(code);
+        sendCode(to,subject,html);
+    }
 
+    private void sendCode(String to,String subject,String html) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 

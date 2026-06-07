@@ -23,6 +23,7 @@ public class SystemConstants {
     public static final String USER_PURCHASE_GOODS_LOCK_KEY = "exchange:user:purchase:goods:lock:id:";
     public static final String USER_CONFIRM_ORDER_LOCK_KEY = "exchange:user:confirm:order:lock:id:";
     public static final String USER_CANCEL_ORDER_LOCK_KEY = "exchange:user:confirm:order:cancel:lock:id:";
+    public static final String USER_DELETE_ORDER_OR_GOODS_LOCK_KEY = "exchange:user:delete:orderOrGoods:lock:id:";
 
     public static final String EXCHANGE_ORDER_INCR_ID_KEY_PREFIX = "exchange:order:icr:id:";
     public static final String EXCHANGE_FILE_INCR_ID_KEY_PREFIX = "exchange:file:icr:id:";
@@ -41,7 +42,7 @@ public class SystemConstants {
     public static final Long EXCHANGE_MACHINE_CODE = 20000828L;
 
     public static final Long TOKEN_EXPIRE_TIME = 1000L * 60 * 30;
-    public static final Long USER_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;
+    public static final Long USER_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 15;
     public static final Long CODE_EXPIRE_TIME = 1000L * 60 * 5;
     public static final Long CHANGE_SCHOOL_LIMIT_TIME = 1000L * 60 * 60 * 24 * 30;
     public static final Long CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME = 1000L * 60 * 60 * 24;

@@ -28,7 +28,10 @@
     </update>
 
     <delete id="deleteById">
-        delete from user where userId=#{userId}
+        delete from user where id=#{userId}
+    </delete>
+    <delete id="deleteUserWalletUseLog">
+        delete from wallet where user_id = #{id}
     </delete>
 
     <select id="selectByName" resultType="com.exchange.pojo.User">
@@ -92,6 +95,11 @@
         FROM wallet
         WHERE user_id = #{id} ORDER BY create_time DESC
     </select>
+    <select id="findByEmail" resultType="com.exchange.pojo.User">
+        SELECT *
+        FROM user
+        WHERE email = #{email}
+    </select>
 
     <!-- 封禁：只能封 非管理员 -->
     <update id="banUser">
@@ -123,6 +131,11 @@
     <update id="updateBalance">
         UPDATE user
         SET balance = #{balance}
+        WHERE id = #{id}
+    </update>
+    <update id="updatePassword">
+        UPDATE user
+        SET password = #{password}
         WHERE id = #{id}
     </update>
 </mapper>

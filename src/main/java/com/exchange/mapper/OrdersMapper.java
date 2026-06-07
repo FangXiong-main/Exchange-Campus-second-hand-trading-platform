@@ -1,5 +1,6 @@
 package com.exchange.mapper;
 
+import com.exchange.pojo.Goods;
 import com.exchange.pojo.Orders;
 import com.exchange.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -44,4 +45,10 @@ public interface OrdersMapper {
     Integer getUnresolvedOrdersCount(Long userId);
 
     void deleteById(Long id);
+
+    Boolean selectByGoodsIdIfExist(Long id);
+
+    void deleteUserInfoById(Long id);
+
+    List<String> selectUserOrdersImages(Long id);
 }

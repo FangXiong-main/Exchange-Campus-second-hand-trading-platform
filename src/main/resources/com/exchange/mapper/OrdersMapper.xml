@@ -39,6 +39,9 @@
     <delete id="deleteById">
         DELETE FROM orders WHERE id = #{id}
     </delete>
+    <delete id="deleteUserInfoById">
+        DELETE FROM orders WHERE buyer_id = #{id} OR seller_id = #{id}
+    </delete>
     <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM orders
     </select>
@@ -92,6 +95,16 @@
         FROM orders
         WHERE (buyer_id = #{userId} OR seller_id = #{userId})
           AND status IN (1, 2)
+    </select>
+    <select id="selectByGoodsIdIfExist" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM orders
+        WHERE goods_id = #{goodsId}
+        )
+    </select>
+    <select id="selectUserOrdersImages" resultType="java.lang.String">
+        SELECT goods_image FROM orders WHERE buyer_id = #{id} OR seller_id = #{id}
     </select>
 
     <!-- 取消订单 -->

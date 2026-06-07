@@ -13,4 +13,6 @@ public interface LoginService {
     Result loginWithCode(LoginDTO loginDTO);
 
     Result loginWithEmail(LoginDTO loginDTO);
+
+    Boolean emailAndUserIsEqual(String email);
 }

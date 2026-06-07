@@ -23,4 +23,11 @@ public interface PostMapper {
     void deletePost(@Param("postId") Long postId,@Param("userId") Long userId);
 
     void deletePostComment(@Param("postId") Long postId, @Param("userId") Long userId);
+
+    String selectPostImagesUrl(Long postId);
+
+    void deleteUserInfoById(Long id);
+    void deleteUserCommentInfoById(Long id);
+
+    List<String> selectUserPostImages(Long id);
 }

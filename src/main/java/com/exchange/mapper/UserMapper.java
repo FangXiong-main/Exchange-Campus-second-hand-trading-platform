@@ -20,7 +20,7 @@ public interface UserMapper {
     List<User> selectAll();
     int insert(User user);
     int update(User user);
-    int deleteById(Long userId);
+    void deleteById(Long userId);
     User selectByName(LoginDTO loginDTO);
     User selectByEmail(LoginDTO loginDTO);
 
@@ -56,4 +56,10 @@ public interface UserMapper {
     void addNewWalletUseLog(@Param("userId") Long userId, @Param("type") Integer type,@Param("price") BigDecimal price, @Param("createTime") LocalDateTime createTime);
 
     List<WalletDetailDTO> getUserEXCWalletList(Long id);
+
+    User findByEmail(String email);
+
+    void updatePassword(@Param("password") String password,@Param("id") Long  id);
+
+    void deleteUserWalletUseLog(Long id);
 }

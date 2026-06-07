@@ -3,16 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.exchange.mapper.CollectMapper">
-    <select id="selectById" resultType="com.exchange.pojo.Collect">
-        select * from collect where collectId=#{collectId}
-    </select>
-    <select id="selectAll" resultType="com.exchange.pojo.Collect">
-        select * from collect
-    </select>
-    <insert id="insert" parameterType="com.exchange.pojo.Collect">
-        insert into collect(userId,goodsId) values(#{userId},#{goodsId})
-    </insert>
-    <delete id="deleteById">
-        delete from collect where collectId=#{collectId}
+    <delete id="deleteUserInfoById">
+        delete from collect where user_id= #{userId}
     </delete>
 </mapper>

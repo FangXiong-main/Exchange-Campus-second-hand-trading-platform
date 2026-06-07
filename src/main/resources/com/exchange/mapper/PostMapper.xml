@@ -39,27 +39,39 @@
         DELETE FROM post WHERE id = #{postId} and user_id = #{userId};
     </delete>
 
+    <delete id="deleteUserInfoById">
+        DELETE FROM post WHERE user_id = #{id};
+    </delete>
+    <delete id="deleteUserCommentInfoById">
+        DELETE FROM post_comment WHERE user_id = #{id};
+    </delete>
+
 
     <select id="getPostList" resultType="com.exchange.dto.PostDTO">
         SELECT
-            p.id,
-            u.username,
-            u.avatar_url AS avatarUrl,
-            p.content,
-            p.user_id AS userId,
-            p.view_count AS viewCount,
-            p.images,
-            p.type,
-            p.create_time AS createTime,
-            p.update_time AS updateTime,
-            (SELECT COUNT(*) FROM post_comment pc WHERE pc.post_id = p.id) AS commentCount
+        p.id,
+        u.username,
+        u.avatar_url AS avatarUrl,
+        p.content,
+        p.user_id AS userId,
+        p.view_count AS viewCount,
+        p.images,
+        p.type,
+        p.create_time AS createTime,
+        p.update_time AS updateTime,
+        (SELECT COUNT(*) FROM post_comment pc WHERE pc.post_id = p.id) AS commentCount
         FROM
-            post p
-                LEFT JOIN
-            user u ON p.user_id = u.id
-        WHERE p.type = #{type}
-        ORDER BY
-            p.create_time DESC
+        post p
+        LEFT JOIN
+        user u ON p.user_id = u.id
+
+        <where>
+            <if test="type != null and type != 0">
+                p.type = #{type}
+            </if>
+        </where>
+
+        ORDER BY p.create_time DESC
     </select>
     <select id="getCommentList" resultType="com.exchange.dto.PostCommentDTO">
         SELECT
@@ -76,6 +88,12 @@
             pc.post_id = #{postId}
         ORDER BY
             pc.create_time ASC
+    </select>
+    <select id="selectPostImagesUrl" resultType="java.lang.String">
+        SELECT images FROM post WHERE id = #{postId}
+    </select>
+    <select id="selectUserPostImages" resultType="java.lang.String">
+        SELECT images FROM post WHERE user_id = #{id}
     </select>
     <update id="addViewCount">
         UPDATE post

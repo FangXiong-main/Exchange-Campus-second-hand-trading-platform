@@ -1,5 +1,6 @@
 package com.exchange.service;
 
+import com.exchange.dto.LoginDTO;
 import com.exchange.dto.LoginResult;
 import com.exchange.dto.UserInfoChangeAuditDTO;
 import com.exchange.vo.Result;
@@ -28,4 +29,8 @@ public interface UserService {
     Integer getUnresolvedOrdersCount();
 
     Result getUserEXCWalletList(Integer page, Integer pageSize);
+
+    Result changeUserPwd(LoginDTO loginDTO);
+
+    Result deleteUserAccount(String email, String code);
 }

@@ -6,8 +6,5 @@ import java.util.List;
 
 @Mapper
 public interface CollectMapper {
-    Collect selectById(Integer collectId);
-    List<Collect> selectAll();
-    int insert(Collect collect);
-    int deleteById(Integer collectId);
+    void deleteUserInfoById(Long id);
 }

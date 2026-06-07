@@ -2,10 +2,12 @@ package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.anno.RequiredAdmin;
+import com.exchange.dto.LoginDTO;
 import com.exchange.dto.UserInfoChangeAuditDTO;
 import com.exchange.service.UserService;
 import com.exchange.vo.Result;
 import jakarta.annotation.Resource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -107,6 +109,18 @@ public class UserController {
     public Result getUserEXCWalletList(@RequestParam(defaultValue = "1") Integer page,
                                      @RequestParam(defaultValue = "10") Integer pageSize) {
         return userService.getUserEXCWalletList(page, pageSize);
+    }
+
+    @PostMapping("/changeUserPwd")
+    public Result changeUserPwd(@RequestBody LoginDTO loginDTO) {
+        return userService.changeUserPwd(loginDTO);
+    }
+
+    @PostMapping("/deleteUserAccount")
+    public Result deleteUserAccount(@RequestBody Map<String, String> map) {
+        String email = map.get("email");
+        String code = map.get("code");
+        return userService.deleteUserAccount(email, code);
     }
 
 }

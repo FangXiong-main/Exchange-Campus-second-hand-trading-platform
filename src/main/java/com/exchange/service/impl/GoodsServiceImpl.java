@@ -1,25 +1,41 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.DeleteFileUtil;
 import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.GoodsDTO;
 import com.exchange.mapper.GoodsMapper;
+import com.exchange.mapper.OrdersMapper;
 import com.exchange.pojo.Goods;
 import com.exchange.service.GoodsService;
 import com.exchange.vo.GoodsDetailsVO;
 import com.exchange.vo.PageResult;
 import com.exchange.vo.Result;
+import com.fangxiong.utils.redis.RedisUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.print.attribute.standard.PageRanges;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.exchange.constants.SystemConstants.USER_DELETE_ORDER_OR_GOODS_LOCK_KEY;
+
 @Service
+@Slf4j
 public class GoodsServiceImpl implements GoodsService {
+    @Resource
+    private RedisUtils redisUtils;
+
+    @Resource
+    private DeleteFileUtil deleteFileUtil;
+
+    @Resource
+    private OrdersMapper ordersMapper;
+
     @Resource
     private MoveFileUtil moveFileUtil;
 
@@ -58,8 +74,22 @@ public class GoodsServiceImpl implements GoodsService {
 
     // ====================== 删除 ======================
     @Override
-    public void deleteById(Long id) {
-        goodsMapper.deleteById(id);
+    public Result deleteById(Long id) {
+        try {
+            if (!redisUtils.enableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id)) {
+                return Result.error("删除失败，请稍后重试");
+            }
+            if (!ordersMapper.selectByGoodsIdIfExist(id)) {
+                deleteFileUtil.deleteFile(goodsMapper.findById(id).getImages());
+            }
+            goodsMapper.deleteById(id);
+            return Result.success();
+        } catch (Exception e) {
+            log.error("删除商品失败", e);
+            return Result.error("删除失败");
+        } finally {
+            redisUtils.disableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id);
+        }
     }
 
     @Override
@@ -89,7 +119,7 @@ public class GoodsServiceImpl implements GoodsService {
     public Result addGoods(Goods goods) {
         String realImageUrl = moveFileUtil.moveTempToReal(goods.getImages());
         if (realImageUrl == null){
-            return Result.error("图片转移失败，保存发布商品失败");
+            return Result.error("图片保存失败，保存发布商品失败");
         }
         goods.setImages(realImageUrl);
         goodsMapper.addGoods(goods);

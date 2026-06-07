@@ -61,4 +61,10 @@ public interface GoodsMapper {
 
     BigDecimal selectGoodsPriceById(Long id);
     Long selectSellerId(Long goodsId);
+
+    Boolean selectGoodsIsExist(Long goodsId);
+
+    void deleteUserInfoById(Long id);
+
+    List<String> selectUserGoodsImages(Long id);
 }

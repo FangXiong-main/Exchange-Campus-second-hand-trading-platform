@@ -1,11 +1,14 @@
 package com.exchange.service.impl;
 
+import com.exchange.Utils.BCryptPasswordUtil;
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.Utils.DeleteFileUtil;
 import com.exchange.Utils.MoveFileUtil;
+import com.exchange.dto.LoginDTO;
 import com.exchange.dto.LoginResult;
 import com.exchange.dto.UserInfoChangeAuditDTO;
 import com.exchange.dto.WalletDetailDTO;
-import com.exchange.mapper.UserMapper;
+import com.exchange.mapper.*;
 import com.exchange.pojo.User;
 import com.exchange.service.UserService;
 import com.fangxiong.utils.json.JsonUtils;
@@ -21,6 +24,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,9 +35,23 @@ import static com.exchange.constants.SystemConstants.*;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+    @Resource
+    private PostMapper postMapper;
+
+    @Resource
+    private OrdersMapper ordersMapper;
+
+    @Resource
+    private GoodsMapper goodsMapper;
+
+    @Resource
+    private CollectMapper collectMapper;
 
     @Resource
     private MoveFileUtil moveFileUtil;
+
+    @Resource
+    private DeleteFileUtil deleteFileUtil;
 
     @Resource
     private RedisUtils redisUtils;
@@ -100,6 +118,9 @@ public class UserServiceImpl implements UserService {
         if(schoolId!=null&&!schoolId.equals(school))
         {
             return Result.error("30天内只允许修改一次学校信息");
+        }
+        if (username.length()>10){
+            return Result.error("用户名长度不能超过10个字符");
         }
         UserInfoChangeAuditDTO userInfoChangeAuditDTO = redisUtils.getStringValue(REQUEST_INFO_CHANGE_KEY + id, UserInfoChangeAuditDTO.class);
         if(userInfoChangeAuditDTO!=null){
@@ -204,7 +225,8 @@ public class UserServiceImpl implements UserService {
             redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
             return Result.success();
         }
-        userMapper.updateInfo(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getUsername(), userInfoChangeAuditDTO.getAvatarUrl(), userInfoChangeAuditDTO.getSchool());
+        String realAvatarUrl = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
+        userMapper.updateInfo(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getUsername(), realAvatarUrl, userInfoChangeAuditDTO.getSchool());
         redisUtils.setStringValue(REQUEST_INFO_CHANGE_SUCCESS_KEY+userInfoChangeAuditDTO.getId(), "1");
         redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
         redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
@@ -229,5 +251,60 @@ public class UserServiceImpl implements UserService {
         PageInfo<WalletDetailDTO> pageInfo = new PageInfo<>(walletDetailDTOS);
         PageResult<WalletDetailDTO> pageResult = new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
         return Result.success(pageResult);
+    }
+
+    @Override
+    public Result changeUserPwd(LoginDTO loginDTO) {
+        User user = userMapper.findByEmail(loginDTO.getEmail());
+        if (user==null){
+            return Result.error("用户不存在");
+        }else if (!user.getId().equals(CurrentHolder.getCurrentUserInfo().getId())){
+            return Result.error("请勿进行非法操作！");
+        }
+
+        if (redisUtils.getStringValue(EMAIL_KEY+loginDTO.getEmail(), String.class)==null){
+            return Result.error("验证码无效");
+        }else {
+            if (!redisUtils.getStringValue(EMAIL_KEY+loginDTO.getEmail(), String.class).equals(loginDTO.getCode())){
+                return Result.error("验证码错误");
+            }
+            userMapper.updatePassword(BCryptPasswordUtil.encode(loginDTO.getPassword()),CurrentHolder.getCurrentUserInfo().getId());
+        }
+
+        return Result.success();
+    }
+
+    @Transactional
+    @Override
+    public Result deleteUserAccount(String email, String code) {
+        User user = userMapper.findByEmail(email);
+        if (user==null){
+            return Result.error("用户不存在");
+        }else if (!user.getId().equals(CurrentHolder.getCurrentUserInfo().getId())){
+            return Result.error("请勿进行非法操作！");
+        }
+        if (redisUtils.getStringValue(EMAIL_KEY+email, String.class)==null){
+            return Result.error("验证码无效");
+        }else {
+            if (!redisUtils.getStringValue(EMAIL_KEY+email, String.class).equals(code)){
+                return Result.error("验证码错误");
+            }
+            BigDecimal balance = userMapper.selectBalanceById(CurrentHolder.getCurrentUserInfo().getId());
+            if (balance.compareTo(BigDecimal.ZERO)>0){
+                return Result.error("账户余额不为0，请先清空余额");
+            }
+            deleteFileUtil.deleteFile(user.getAvatarUrl());
+            goodsMapper.selectUserGoodsImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);
+            postMapper.selectUserPostImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);
+            ordersMapper.selectUserOrdersImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);
+            collectMapper.deleteUserInfoById(CurrentHolder.getCurrentUserInfo().getId());
+            goodsMapper.deleteUserInfoById(CurrentHolder.getCurrentUserInfo().getId());
+            ordersMapper.deleteUserInfoById(CurrentHolder.getCurrentUserInfo().getId());
+            postMapper.deleteUserInfoById(CurrentHolder.getCurrentUserInfo().getId());
+            postMapper.deleteUserCommentInfoById(CurrentHolder.getCurrentUserInfo().getId());
+            userMapper.deleteUserWalletUseLog(CurrentHolder.getCurrentUserInfo().getId());
+            userMapper.deleteById(CurrentHolder.getCurrentUserInfo().getId());
+            return Result.success();
+        }
     }
 }

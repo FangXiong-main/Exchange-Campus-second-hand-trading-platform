@@ -1,6 +1,7 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.BCryptPasswordUtil;
+import com.exchange.Utils.CurrentHolder;
 import com.exchange.Utils.JWTUtils;
 import com.exchange.Utils.RandomCodeGenerator;
 import com.exchange.dto.LoginToken;
@@ -64,7 +65,6 @@ public class LoginServiceImpl implements LoginService {
         loginResult.setToken(token);
         log.info("登录成功，正在保存Token至Redis");
         redisUtils.setStringValue(TOKEN_KEY + user.getId(), new LoginToken(user.getUsername(), token), TOKEN_EXPIRE_TIME);
-
         return Result.success(loginResult);
     }
 
@@ -95,6 +95,28 @@ public class LoginServiceImpl implements LoginService {
             user.setUpdateTime(LocalDateTime.now());
             userMapper.insert(user);
         }
+        return checkUserAndSaveToken(user);
+    }
+
+    @Override
+    public Result loginWithEmail(LoginDTO loginDTO) {
+        User user = userMapper.selectByEmail(loginDTO);
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+        if (!BCryptPasswordUtil.matches(loginDTO.getPassword(), user.getPassword())){
+            return Result.error("密码错误");
+        }
+        return checkUserAndSaveToken(user);
+    }
+
+    @Override
+    public Boolean emailAndUserIsEqual(String email) {
+        User byEmail = userMapper.findByEmail(email);
+        return byEmail != null && byEmail.getId().equals(CurrentHolder.getCurrentUserInfo().getId());
+    }
+
+    private Result checkUserAndSaveToken(User user){
         if (user.getRole()==-1){
             return Result.error("您的账号已被被封禁，原因："+user.getBanReason());
         }
@@ -103,18 +125,15 @@ public class LoginServiceImpl implements LoginService {
         claims.put("id", user.getId());
         String token = JWTUtils.generateToken(claims);
         redisUtils.setStringValue(TOKEN_KEY + user.getId(), new LoginToken(user.getUsername(), token), USER_TOKEN_EXPIRE_TIME);
-        log.info("验证码登录成功，正在保存Token至Redis");
+        log.info("密码登录成功，正在保存Token至Redis");
         LoginResult loginResult = new LoginResult();
         loginResult.setId(user.getId());
         loginResult.setUsername(user.getUsername());
         loginResult.setRole(user.getRole());
         loginResult.setToken(token);
         loginResult.setSchool(user.getSchool());
+        loginResult.setAvatarUrl(user.getAvatarUrl());
         return Result.success(loginResult);
     }
 
-    @Override
-    public Result loginWithEmail(LoginDTO loginDTO) {
-        return null;
-    }
 }
