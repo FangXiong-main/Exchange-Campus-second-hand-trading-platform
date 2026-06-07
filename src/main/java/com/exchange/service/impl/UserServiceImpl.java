@@ -225,7 +225,12 @@ public class UserServiceImpl implements UserService {
             redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
             return Result.success();
         }
-        String realAvatarUrl = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
+        String realAvatarUrl;
+        if (userInfoChangeAuditDTO.getAvatarUrl()!=null && !userInfoChangeAuditDTO.getAvatarUrl().isEmpty()){
+            realAvatarUrl  = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
+        }else {
+            realAvatarUrl = EXCHANGE_DEFAULT_AVATAR_URL;
+        }
         userMapper.updateInfo(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getUsername(), realAvatarUrl, userInfoChangeAuditDTO.getSchool());
         redisUtils.setStringValue(REQUEST_INFO_CHANGE_SUCCESS_KEY+userInfoChangeAuditDTO.getId(), "1");
         redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
@@ -293,7 +298,9 @@ public class UserServiceImpl implements UserService {
             if (balance.compareTo(BigDecimal.ZERO)>0){
                 return Result.error("账户余额不为0，请先清空余额");
             }
-            deleteFileUtil.deleteFile(user.getAvatarUrl());
+            if (!user.getAvatarUrl().equals(EXCHANGE_DEFAULT_AVATAR_URL)){
+                deleteFileUtil.deleteFile(user.getAvatarUrl());
+            }
             goodsMapper.selectUserGoodsImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);
             postMapper.selectUserPostImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);
             ordersMapper.selectUserOrdersImages(CurrentHolder.getCurrentUserInfo().getId()).forEach(deleteFileUtil::deleteFile);

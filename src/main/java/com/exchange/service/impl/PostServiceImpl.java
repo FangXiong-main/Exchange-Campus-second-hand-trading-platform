@@ -88,9 +88,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public Result deletePost(Long postId) {
         String postImagesUrl = postMapper.selectPostImagesUrl(postId);
-        boolean isDeleted = deleteFileUtil.deleteFile(postImagesUrl);
-        if (!isDeleted) {
-            return Result.error("删除失败");
+        if (postImagesUrl != null && !postImagesUrl.isEmpty()){
+            if (!deleteFileUtil.deleteFile(postImagesUrl)) {
+                return Result.error("删除失败");
+            }
         }
         postMapper.deletePost(postId, CurrentHolder.getCurrentUserInfo().getId());
         postMapper.deletePostComment(postId, CurrentHolder.getCurrentUserInfo().getId());

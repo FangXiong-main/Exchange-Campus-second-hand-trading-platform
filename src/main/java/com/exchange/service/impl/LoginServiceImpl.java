@@ -14,6 +14,7 @@ import com.exchange.service.LoginService;
 import com.fangxiong.utils.redis.RedisUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -93,6 +94,7 @@ public class LoginServiceImpl implements LoginService {
             user.setRole(1);
             user.setCreateTime(LocalDateTime.now());
             user.setUpdateTime(LocalDateTime.now());
+            user.setAvatarUrl(EXCHANGE_DEFAULT_AVATAR_URL);
             userMapper.insert(user);
         }
         return checkUserAndSaveToken(user);
