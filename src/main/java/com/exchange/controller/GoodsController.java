@@ -3,6 +3,7 @@ package com.exchange.controller;
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.anno.RequiredAdmin;
 import com.exchange.dto.LoginResult;
+import com.exchange.dto.SearchGoodsDTO;
 import com.exchange.pojo.Goods;
 import com.exchange.service.GoodsService;
 import com.exchange.vo.PageResult;
@@ -153,6 +154,13 @@ public class GoodsController {
         Long id = Long.valueOf(params.get("id").toString());
         Long type = Long.valueOf(params.get("type").toString()); // 0 取消收藏 1 收藏
         return goodsService.favoriteToggle(id, type);
+    }
+
+    @PostMapping("/getGoodsListByTypeOrSearchApi")
+    public Result getGoodsListByTypeOrSearchApi(
+            @RequestBody SearchGoodsDTO searchGoodsDTO
+            ){
+        return goodsService.getGoodsListByTypeOrSearchApi(searchGoodsDTO);
     }
 
 }

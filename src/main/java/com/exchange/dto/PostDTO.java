@@ -20,6 +20,7 @@ public class PostDTO {
     private Integer commentCount;  // 评论数
     private String images;         // 图片
     private Integer type;          // INT 类型 1最新发布  2热门推荐 3校园闲聊 4生活互助
+    private Long school;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

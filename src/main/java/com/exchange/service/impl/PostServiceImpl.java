@@ -40,8 +40,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Result getPostPage(Integer pageNum, Integer pageSize,Integer type) {
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0){
+            return Result.error("请先绑定学校");
+        }
         PageHelper.startPage(pageNum, pageSize);
-        List<PostDTO> postList = postMapper.getPostList(type);
+        List<PostDTO> postList = postMapper.getPostList(type, CurrentHolder.getCurrentUserInfo().getSchool());
         PageInfo<PostDTO> pageInfo = new PageInfo<>(postList);
         PageResult<PostDTO> pageResult = new PageResult<>();
         pageResult.setRows(pageInfo.getList());
@@ -70,6 +73,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Result publishPost(PostDTO postDTO) {
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0) {
+            return Result.error("请先绑定学校");
+        }
+        postDTO.setSchool(CurrentHolder.getCurrentUserInfo().getSchool());
         postDTO.setUserId(CurrentHolder.getCurrentUserInfo().getId());
         postDTO.setCreateTime(LocalDateTime.now());
         String realUrl = moveFileUtil.moveTempToReal(postDTO.getImages());

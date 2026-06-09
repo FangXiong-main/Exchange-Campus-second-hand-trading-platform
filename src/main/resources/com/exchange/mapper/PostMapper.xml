@@ -22,12 +22,14 @@
             user_id,
             images,
             type,
+            school,
             create_time
         ) VALUES (
                      #{content},
                      #{userId},
                      #{images},
                      #{type},
+                     #{school},
                      #{createTime}
                  )
     </insert>
@@ -66,8 +68,10 @@
         user u ON p.user_id = u.id
 
         <where>
+            p.school = #{school}
+
             <if test="type != null and type != 0">
-                p.type = #{type}
+                AND p.type = #{type}
             </if>
         </where>
 

@@ -13,7 +13,6 @@ public class Post {
     private Long id;
     private String content;        // 帖子内容
     private Integer userId;        // 发表用户
-    private Integer likeCount;     // 收藏数
     private Integer commentCount;  // 评论数
     private String images;         // 图片，多张逗号分隔
     private Integer type;          // INT 类型

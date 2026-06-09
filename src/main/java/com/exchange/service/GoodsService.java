@@ -1,11 +1,13 @@
 package com.exchange.service;
 
 import com.exchange.dto.GoodsDTO;
+import com.exchange.dto.SearchGoodsDTO;
 import com.exchange.pojo.Goods;
 import com.exchange.vo.GoodsDetailsVO;
 import com.exchange.vo.Result;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GoodsService {
     List<Goods> findAuditGoods();
@@ -33,4 +35,6 @@ public interface GoodsService {
     Result favoriteToggle(Long id, Long type);
 
     GoodsDetailsVO getGoodsDetails(Long id);
+
+    Result getGoodsListByTypeOrSearchApi(SearchGoodsDTO searchGoodsDTO);
 }

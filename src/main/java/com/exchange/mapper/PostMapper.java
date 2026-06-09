@@ -10,13 +10,13 @@ import java.util.List;
 
 @Mapper
 public interface PostMapper {
-    List<PostDTO> getPostList(Integer type);
+    List<PostDTO> getPostList(@Param("type") Integer type,@Param("school")Long school);
 
     List<PostCommentDTO> getCommentList(Long postId);
 
     void addComment(PostCommentDTO postCommentDTO);
 
-    void publishPost(PostDTO postDTO);
+    void publishPost(@Param("postDTO") PostDTO postDTO);
 
     void addViewCount(Long postId);
 

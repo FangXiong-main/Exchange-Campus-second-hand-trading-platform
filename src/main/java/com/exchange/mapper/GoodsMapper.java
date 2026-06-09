@@ -1,6 +1,7 @@
 package com.exchange.mapper;
 
 import com.exchange.dto.GoodsDTO;
+import com.exchange.dto.SearchGoodsDTO;
 import com.exchange.pojo.Goods;
 import com.exchange.vo.GoodsDetailsVO;
 import com.exchange.vo.RecentGoodsVO;
@@ -11,6 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface GoodsMapper {
@@ -41,7 +43,7 @@ public interface GoodsMapper {
 
     void addGoods(Goods goods);
 
-    List<GoodsDTO> selectNewGoodsPage();
+    List<GoodsDTO> selectNewGoodsPage(Long  school);
 
     void addFavoriteGoods(
             @Param("id") Long id,
@@ -67,4 +69,6 @@ public interface GoodsMapper {
     void deleteUserInfoById(Long id);
 
     List<String> selectUserGoodsImages(Long id);
+
+    List<GoodsDTO> selectGoodsListByTypeOrSearch(SearchGoodsDTO searchGoodsDTO);
 }

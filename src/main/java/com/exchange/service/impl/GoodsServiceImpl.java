@@ -4,6 +4,7 @@ import com.exchange.Utils.CurrentHolder;
 import com.exchange.Utils.DeleteFileUtil;
 import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.GoodsDTO;
+import com.exchange.dto.SearchGoodsDTO;
 import com.exchange.mapper.GoodsMapper;
 import com.exchange.mapper.OrdersMapper;
 import com.exchange.pojo.Goods;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.print.attribute.standard.PageRanges;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static com.exchange.constants.SystemConstants.USER_DELETE_ORDER_OR_GOODS_LOCK_KEY;
 
@@ -122,14 +124,21 @@ public class GoodsServiceImpl implements GoodsService {
             return Result.error("图片保存失败，保存发布商品失败");
         }
         goods.setImages(realImageUrl);
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0) {
+            return Result.error("请先完善学校信息");
+        }
+        goods.setSchool(CurrentHolder.getCurrentUserInfo().getSchool());
         goodsMapper.addGoods(goods);
         return Result.success();
     }
 
     @Override
     public Result getNewGoodsPage(Integer pageNum, Integer pageSize) {
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0){
+            return Result.error("请先完善学校信息");
+        }
         PageHelper.startPage(pageNum, pageSize);
-        List<GoodsDTO> list = goodsMapper.selectNewGoodsPage();
+        List<GoodsDTO> list = goodsMapper.selectNewGoodsPage(CurrentHolder.getCurrentUserInfo().getSchool());
         PageInfo<GoodsDTO> pageInfo = new PageInfo<>(list);
         PageResult<GoodsDTO> pageResult = new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
         return Result.success(pageResult);
@@ -150,5 +159,18 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public GoodsDetailsVO getGoodsDetails(Long id) {
         return goodsMapper.getGoodsDetails(id, CurrentHolder.getCurrentUserInfo().getId());
+    }
+
+    @Override
+    public Result getGoodsListByTypeOrSearchApi(SearchGoodsDTO searchGoodsDTO) {
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0){
+            return Result.error("请先完善学校信息");
+        }
+        searchGoodsDTO.setSchool(CurrentHolder.getCurrentUserInfo().getSchool());
+        PageHelper.startPage(searchGoodsDTO.getPageNum(), searchGoodsDTO.getPageSize());
+        List<GoodsDTO> list = goodsMapper.selectGoodsListByTypeOrSearch(searchGoodsDTO);
+        PageInfo<GoodsDTO> pageInfo = new PageInfo<>(list);
+        PageResult<GoodsDTO> pageResult = new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
+        return Result.success(pageResult);
     }
 }

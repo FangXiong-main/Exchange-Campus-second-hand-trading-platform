@@ -22,6 +22,7 @@ public class Goods {
     private Integer auditStatus;
     private Long userId;
     private String username;
+    private Long school;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
