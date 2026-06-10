@@ -99,6 +99,32 @@
     <select id="selectUserPostImages" resultType="java.lang.String">
         SELECT images FROM post WHERE user_id = #{id}
     </select>
+    <select id="selectPostListByContent" resultType="com.exchange.dto.PostDTO">
+        SELECT
+        p.id,
+        u.username,
+        u.avatar_url AS avatarUrl,
+        p.content,
+        p.user_id AS userId,
+        p.view_count AS viewCount,
+        p.images,
+        p.type,
+        p.create_time AS createTime,
+        p.update_time AS updateTime,
+        (SELECT COUNT(*) FROM post_comment pc WHERE pc.post_id = p.id) AS commentCount
+        FROM
+        post p
+        LEFT JOIN
+        user u ON p.user_id = u.id
+
+        <where>
+            p.school = #{school}
+
+            <if test="content != null and content != ''">
+                AND p.content LIKE CONCAT('%', #{content}, '%')
+            </if>
+        </where>
+    </select>
     <update id="addViewCount">
         UPDATE post
         SET view_count = view_count + 1

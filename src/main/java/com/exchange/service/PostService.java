@@ -16,4 +16,6 @@ public interface PostService {
     Result addViewCount(Long postId);
 
     Result deletePost(Long postId);
+
+    Result getSearchedPostList(Integer pageNum, Integer pageSize, String content);
 }

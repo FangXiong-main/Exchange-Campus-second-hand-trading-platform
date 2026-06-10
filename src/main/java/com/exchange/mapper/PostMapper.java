@@ -30,4 +30,6 @@ public interface PostMapper {
     void deleteUserCommentInfoById(Long id);
 
     List<String> selectUserPostImages(Long id);
+
+    List<PostDTO> selectPostListByContent(@Param("content") String content,@Param("school") Long school);
 }

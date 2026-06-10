@@ -104,4 +104,21 @@ public class PostServiceImpl implements PostService {
         postMapper.deletePostComment(postId, CurrentHolder.getCurrentUserInfo().getId());
         return Result.success();
     }
+
+    @Override
+    public Result getSearchedPostList(Integer pageNum, Integer pageSize, String content) {
+        if (content==null||content.isEmpty()){
+            return Result.error("请输入搜索内容");
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        if (CurrentHolder.getCurrentUserInfo().getSchool()==0){
+            return Result.error("请先绑定学校");
+        }
+        List<PostDTO> postDTOS = postMapper.selectPostListByContent(content, CurrentHolder.getCurrentUserInfo().getSchool());
+        PageInfo<PostDTO> pageInfo = new PageInfo<>(postDTOS);
+        PageResult<PostDTO> pageResult = new PageResult<>();
+        pageResult.setRows(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        return Result.success(pageResult);
+    }
 }

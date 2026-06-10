@@ -51,4 +51,12 @@ public class PostController {
         Long postId = Long.parseLong(params.get("id"));
         return postService.deletePost(postId);
     }
+
+    @PostMapping("/getSearchedPostList")
+    public Result getSearchedPostList(@RequestBody Map<String,String> params){
+        Integer pageNum = Integer.parseInt(params.get("pageNum"));
+        Integer pageSize = Integer.parseInt(params.get("pageSize"));
+        String content = params.get("content");
+        return postService.getSearchedPostList(pageNum,pageSize,content);
+    }
 }
