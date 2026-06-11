@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Mapper
 public interface GoodsMapper {
-    Long selectCount();
+    Long selectCount(Long school);
     List<RecentGoodsVO> selectRecentGoods();
     List<TodoVO> selectWaitCheck();
     List<Goods> findAuditGoods();

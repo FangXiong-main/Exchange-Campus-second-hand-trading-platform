@@ -3,6 +3,7 @@ package com.exchange.mapper;
 import com.exchange.dto.PostCommentDTO;
 import com.exchange.dto.PostDTO;
 import com.exchange.pojo.Post;
+import com.exchange.pojo.PostComment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,7 +17,7 @@ public interface PostMapper {
 
     void addComment(PostCommentDTO postCommentDTO);
 
-    void publishPost(@Param("postDTO") PostDTO postDTO);
+    void publishPost(PostDTO postDTO);
 
     void addViewCount(Long postId);
 
@@ -32,4 +33,16 @@ public interface PostMapper {
     List<String> selectUserPostImages(Long id);
 
     List<PostDTO> selectPostListByContent(@Param("content") String content,@Param("school") Long school);
+
+    Post selectCommentPostInfoById(Long commentId);
+
+    void deleteCommentById(Long commentId);
+
+    Post selectPostInfoById(Long postId);
+
+    void deletePostByPostId(Long postId);
+
+    void deletePostCommentByPostId(Long postId);
+
+    List<String> selectPostImagesUrlByPostId(Long postId);
 }

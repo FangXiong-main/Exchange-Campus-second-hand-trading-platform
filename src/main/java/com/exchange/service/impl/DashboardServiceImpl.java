@@ -1,5 +1,6 @@
 package com.exchange.service.impl;
 
+import com.exchange.Utils.CurrentHolder;
 import com.exchange.mapper.GoodsMapper;
 import com.exchange.mapper.OrdersMapper;
 import com.exchange.mapper.UserMapper;
@@ -27,9 +28,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardVO getDashboardData() {
         DashboardVO vo = new DashboardVO();
-        vo.setUserCount(userMapper.selectCount());
-        vo.setGoodsCount(goodsMapper.selectCount());
-        vo.setOrderCount(ordersMapper.selectCount());
+        vo.setUserCount(userMapper.selectCount(CurrentHolder.getCurrentUserInfo().getSchool()));
+        vo.setGoodsCount(goodsMapper.selectCount(CurrentHolder.getCurrentUserInfo().getSchool()));
+        vo.setOrderCount(ordersMapper.selectCount(CurrentHolder.getCurrentUserInfo().getSchool()));
         vo.setTodayOrderCount(ordersMapper.countTodayOrder());
         return vo;
     }

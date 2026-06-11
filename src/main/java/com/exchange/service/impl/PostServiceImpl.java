@@ -16,6 +16,7 @@ import com.fangxiong.utils.redis.RedisUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
+@Slf4j
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -120,5 +122,47 @@ public class PostServiceImpl implements PostService {
         pageResult.setRows(pageInfo.getList());
         pageResult.setTotal(pageInfo.getTotal());
         return Result.success(pageResult);
+    }
+
+    @Transactional
+    @Override
+    public Result adminDeleteComment(Long commentId) {
+        Post post = postMapper.selectCommentPostInfoById(commentId);
+        if (post==null){
+            return Result.error("该评论不存在");
+        }
+        if (!post.getSchool().equals(CurrentHolder.getCurrentUserInfo().getSchool())){
+            return Result.error("无权限");
+        }
+        postMapper.deleteCommentById(commentId);
+        return Result.success();
+    }
+
+    @Transactional
+    @Override
+    public Result adminDeletePost(Long postId) {
+        List<String> imagesUrl = null;
+        try {
+            Post post = postMapper.selectPostInfoById(postId);
+            if (post==null){
+                return Result.error("该帖子不存在");
+            }
+            if (!post.getSchool().equals(CurrentHolder.getCurrentUserInfo().getSchool())){
+                return Result.error("无权限");
+            }
+            imagesUrl = postMapper.selectPostImagesUrlByPostId(postId);
+            if (imagesUrl!=null){
+                imagesUrl.forEach(moveFileUtil::moveRealToTemp);
+            }
+            postMapper.deletePostByPostId(postId);
+            postMapper.deletePostCommentByPostId(postId);
+        } catch (Exception e) {
+            log.info("删除失败：{}", e.getMessage());
+            if (imagesUrl!=null){
+                imagesUrl.forEach(moveFileUtil::moveTempToReal);
+            }
+            return Result.error("删除失败");
+        }
+        return Result.success();
     }
 }

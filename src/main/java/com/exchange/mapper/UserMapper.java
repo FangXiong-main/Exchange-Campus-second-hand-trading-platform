@@ -24,7 +24,7 @@ public interface UserMapper {
     User selectByName(LoginDTO loginDTO);
     User selectByEmail(LoginDTO loginDTO);
 
-    Long selectCount();
+    Long selectCount(Long school);
 
     List<User> getUserList(@Param("email") String email, @Param("status") Integer status);
 

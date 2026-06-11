@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mapper
 public interface OrdersMapper {
-    Long selectCount();
+    Long selectCount(Long  school);
 
     Long countTodayOrder();
 

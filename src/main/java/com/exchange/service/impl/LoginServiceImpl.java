@@ -49,6 +49,9 @@ public class LoginServiceImpl implements LoginService {
         if (user == null) {
             return Result.error("管理员不存在");
         }
+        if (user.getRole() != 2) {
+            return Result.error("非管理员用户");
+        }
 
         String dbPassword = user.getPassword();
         if (!BCryptPasswordUtil.matches(password, dbPassword)) {
@@ -59,6 +62,7 @@ public class LoginServiceImpl implements LoginService {
         loginResult.setId(user.getId());
         loginResult.setUsername(username);
         loginResult.setRole(user.getRole());
+        loginResult.setSchool(user.getSchool());
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
         claims.put("id", user.getId());

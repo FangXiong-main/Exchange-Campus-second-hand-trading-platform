@@ -36,7 +36,7 @@
         VALUES (#{userId}, #{id},#{createTime})
     </insert>
     <select id="selectCount" resultType="java.lang.Long">
-        SELECT COUNT(*) FROM goods
+        SELECT COUNT(*) FROM goods WHERE school = #{school}
     </select>
 
     <select id="selectRecentGoods" resultType="com.exchange.vo.RecentGoodsVO">

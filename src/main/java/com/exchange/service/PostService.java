@@ -18,4 +18,8 @@ public interface PostService {
     Result deletePost(Long postId);
 
     Result getSearchedPostList(Integer pageNum, Integer pageSize, String content);
+
+    Result adminDeleteComment(Long commentId);
+
+    Result adminDeletePost(Long postId);
 }

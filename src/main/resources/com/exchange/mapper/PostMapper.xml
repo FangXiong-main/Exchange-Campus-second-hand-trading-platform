@@ -47,6 +47,16 @@
     <delete id="deleteUserCommentInfoById">
         DELETE FROM post_comment WHERE user_id = #{id};
     </delete>
+    <delete id="deleteCommentById">
+        DELETE FROM post_comment WHERE id = #{commentId};
+    </delete>
+
+    <delete id="deletePostByPostId">
+        DELETE FROM post WHERE id = #{postId};
+    </delete>
+    <delete id="deletePostCommentByPostId">
+        DELETE FROM post_comment WHERE post_id = #{postId};
+    </delete>
 
 
     <select id="getPostList" resultType="com.exchange.dto.PostDTO">
@@ -125,6 +135,43 @@
             </if>
         </where>
     </select>
+
+    <select id="selectCommentPostInfoById" resultType="com.exchange.pojo.Post">
+        SELECT
+        p.id,
+        p.content,
+        p.user_id AS userId,
+        p.images,
+        p.type,
+        p.create_time AS createTime,
+        p.update_time AS updateTime,
+        p.school
+        FROM
+        post_comment pc
+        LEFT JOIN
+        post p ON pc.post_id = p.id
+        WHERE
+        pc.id = #{commentId}
+    </select>
+    <select id="selectPostInfoById" resultType="com.exchange.pojo.Post">
+        SELECT
+        p.id,
+        p.content,
+        p.user_id AS userId,
+        p.images,
+        p.type,
+        p.create_time AS createTime,
+        p.update_time AS updateTime,
+        p.school
+        FROM
+        post p
+        WHERE
+        p.id = #{postId}
+    </select>
+    <select id="selectPostImagesUrlByPostId" resultType="java.lang.String">
+        SELECT images FROM post WHERE id = #{postId}
+    </select>
+
     <update id="addViewCount">
         UPDATE post
         SET view_count = view_count + 1
