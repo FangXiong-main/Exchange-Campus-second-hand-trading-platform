@@ -127,6 +127,11 @@
         SET sale_status = #{saleStatus}
         WHERE id = #{id}
     </update>
+    <update id="changeUserGoodsSchool">
+        UPDATE goods
+        SET school = #{school}
+        WHERE user_id = #{id}
+    </update>
 
     <select id="findRejectedGoods" resultType="com.exchange.pojo.Goods">
         SELECT

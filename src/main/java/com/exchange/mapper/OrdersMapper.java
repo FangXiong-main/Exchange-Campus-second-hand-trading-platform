@@ -51,4 +51,6 @@ public interface OrdersMapper {
     void deleteUserInfoById(Long id);
 
     List<String> selectUserOrdersImages(Long id);
+
+    Orders getOrderDetailsByOrderId(Long id);
 }

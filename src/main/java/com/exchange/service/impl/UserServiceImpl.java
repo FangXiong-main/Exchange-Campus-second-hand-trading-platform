@@ -128,7 +128,10 @@ public class UserServiceImpl implements UserService {
         }
         redisUtils.setStringValue(REQUEST_INFO_CHANGE_IGNORED_KEY+id, "1");
         redisUtils.setStringValue(SCHOOL_CHANGE_KEY+id, "1", CHANGE_SCHOOL_LIMIT_TIME);
-        redisUtils.setStringValue(REQUEST_INFO_CHANGE_KEY+id, new UserInfoChangeAuditDTO(CurrentHolder.getCurrentUserInfo().getId(),username,avatarUrl,school, null, 1, 0,LocalDateTime.now(),null, null),CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME);
+        if (avatarUrl.isEmpty()){
+            avatarUrl = null;
+        }
+        redisUtils.setStringValue(REQUEST_INFO_CHANGE_KEY+id, new UserInfoChangeAuditDTO(CurrentHolder.getCurrentUserInfo().getId(),username,avatarUrl,CurrentHolder.getCurrentUserInfo().getSchool(),school, null, 1, 0,LocalDateTime.now(),null, null),CHANGE_INFO_ADMIN_AUDIT_LIMIT_TIME);
         return Result.success();
     }
 
@@ -171,7 +174,6 @@ public class UserServiceImpl implements UserService {
         PageHelper.startPage(pageNum, pageSize);
         String prefix = "exchange:change:info:id:*";
 
-        // 1. 安全 scan 获取所有符合条件的 key（非阻塞）
         Set<String> keySet = stringRedisTemplate.execute((RedisCallback<Set<String>>) connection -> {
             Set<String> keys = new HashSet<>();
             try (Cursor<byte[]> cursor = connection.scan(
@@ -187,12 +189,10 @@ public class UserServiceImpl implements UserService {
             return keys;
         });
 
-        // 空数据直接返回
         if (keySet == null || keySet.isEmpty()) {
             return Result.success(new PageResult<>(0, Collections.emptyList()));
         }
 
-        // 2. 转列表并排序（按申请时间倒序，最新在前）
         List<UserInfoChangeAuditDTO> list = new ArrayList<>();
         for (String key : keySet) {
             String json = stringRedisTemplate.opsForValue().get(key);
@@ -200,13 +200,13 @@ public class UserServiceImpl implements UserService {
 
             UserInfoChangeAuditDTO dto = JsonUtils.jsonToBean(json, UserInfoChangeAuditDTO.class);
             dto.setServerTime(LocalDateTime.now());
-            list.add(dto);
+            if (dto.getOriginalSchool().equals(CurrentHolder.getCurrentUserInfo().getSchool())){
+                list.add(dto);
+            }
         }
 
-        // 按申请时间倒序（和你前端保持一致）
         list.sort((a, b) -> b.getRequestTime().compareTo(a.getRequestTime()));
 
-        // 3. 手动分页
         int total = list.size();
         int start = (pageNum - 1) * pageSize;
         int end = Math.min(start + pageSize, total);
@@ -217,24 +217,38 @@ public class UserServiceImpl implements UserService {
         return Result.success(new PageResult<>(total, pageList));
     }
 
+    @Transactional
     @Override
     public Result auditInfoChange(UserInfoChangeAuditDTO userInfoChangeAuditDTO) {
-        if(userInfoChangeAuditDTO.getAuditStatus()==2){
-            redisUtils.setStringValue(REQUEST_INFO_CHANGE_REJECTED_KEY+userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getRejectReason());
+        boolean needToMoveBackFile = false;
+        try {
+            if(userInfoChangeAuditDTO.getAuditStatus()==2){
+                redisUtils.setStringValue(REQUEST_INFO_CHANGE_REJECTED_KEY+userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getRejectReason());
+                redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
+                redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
+                return Result.success();
+            }
+            String realAvatarUrl = null;
+            if (userInfoChangeAuditDTO.getAvatarUrl()!=null&&!userInfoChangeAuditDTO.getAvatarUrl().isEmpty()&&!userInfoChangeAuditDTO.getAvatarUrl().equals(EXCHANGE_DEFAULT_AVATAR_URL)){
+                realAvatarUrl  = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
+                moveFileUtil.moveRealToTemp(userMapper.selectAvatarUrlById(userInfoChangeAuditDTO.getId()));
+                needToMoveBackFile = true;
+            }
+            if (!userInfoChangeAuditDTO.getSchool().equals(userInfoChangeAuditDTO.getOriginalSchool())){
+                goodsMapper.changeUserGoodsSchool(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getSchool());
+                collectMapper.deleteUserInfoById(userInfoChangeAuditDTO.getId());
+            }
+            userMapper.updateInfo(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getUsername(), realAvatarUrl, userInfoChangeAuditDTO.getSchool());
+            redisUtils.setStringValue(REQUEST_INFO_CHANGE_SUCCESS_KEY+userInfoChangeAuditDTO.getId(), "1");
             redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
             redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
-            return Result.success();
+        } catch (Exception e) {
+            log.info("审核信息修改失败");
+            if (needToMoveBackFile){
+                moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
+            }
+            return Result.error("审核信息修改失败");
         }
-        String realAvatarUrl;
-        if (userInfoChangeAuditDTO.getAvatarUrl()!=null && !userInfoChangeAuditDTO.getAvatarUrl().isEmpty()){
-            realAvatarUrl  = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
-        }else {
-            realAvatarUrl = EXCHANGE_DEFAULT_AVATAR_URL;
-        }
-        userMapper.updateInfo(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getUsername(), realAvatarUrl, userInfoChangeAuditDTO.getSchool());
-        redisUtils.setStringValue(REQUEST_INFO_CHANGE_SUCCESS_KEY+userInfoChangeAuditDTO.getId(), "1");
-        redisUtils.remove(REQUEST_INFO_CHANGE_IGNORED_KEY+userInfoChangeAuditDTO.getId());
-        redisUtils.remove(REQUEST_INFO_CHANGE_KEY+userInfoChangeAuditDTO.getId());
         return Result.success();
     }
 

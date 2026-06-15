@@ -1,6 +1,7 @@
 package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.anno.RequiredAdmin;
 import com.exchange.service.OrderService;
 import com.exchange.vo.OrderVO;
 import com.exchange.vo.PageResult;
@@ -19,6 +20,19 @@ import java.util.Map;
 public class OrderController {
     @Resource
     private OrderService orderService;
+
+    @RequiredAdmin
+    @GetMapping("/getOrderDetailById")
+    public Result getOrderDetailById(@RequestParam Long id) {
+        return orderService.getOrderDetailsById(id);
+    }
+
+    @RequiredAdmin
+    @PostMapping("/operateDrawback")
+    public Result operateDrawback(@RequestBody Map<String,String> params){
+        Long id = Long.parseLong(params.get("id"));
+        return orderService.operateDrawback(id);
+    }
 
     @GetMapping("/my-orders")
     public Result myOrders(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {

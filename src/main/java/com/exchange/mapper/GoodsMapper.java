@@ -71,4 +71,6 @@ public interface GoodsMapper {
     List<String> selectUserGoodsImages(Long id);
 
     List<GoodsDTO> selectGoodsListByTypeOrSearch(SearchGoodsDTO searchGoodsDTO);
+
+    void changeUserGoodsSchool(Long id, Long school);
 }

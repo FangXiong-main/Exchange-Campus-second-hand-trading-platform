@@ -101,6 +101,17 @@
         WHERE email = #{email}
     </select>
 
+    <select id="selectUserSchoolId" resultType="java.lang.Long">
+        SELECT school
+        FROM user
+        WHERE id = #{id}
+    </select>
+    <select id="selectAvatarUrlById" resultType="java.lang.String">
+        SELECT avatar_url
+        FROM user
+        WHERE id = #{id}
+    </select>
+
     <!-- 封禁：只能封 非管理员 -->
     <update id="banUser">
         UPDATE user
@@ -124,8 +135,10 @@
     <update id="updateInfo">
         UPDATE user
         SET username = #{username},
-            avatar_url = #{avatarUrl},
-            school = #{school}
+        school = #{school}
+        <if test="avatarUrl != null">
+            , avatar_url = #{avatarUrl}
+        </if>
         WHERE id = #{id}
     </update>
     <update id="updateBalance">

@@ -13,6 +13,7 @@ public class UserInfoChangeAuditDTO {
     private Long id;
     private String username;
     private String avatarUrl;
+    private Long originalSchool;
     private Long school;
     private String email;
     private Integer changedStatus;

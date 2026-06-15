@@ -62,4 +62,8 @@ public interface UserMapper {
     void updatePassword(@Param("password") String password,@Param("id") Long  id);
 
     void deleteUserWalletUseLog(Long id);
+
+    Long selectUserSchoolId(Long id);
+
+    String selectAvatarUrlById(Long id);
 }

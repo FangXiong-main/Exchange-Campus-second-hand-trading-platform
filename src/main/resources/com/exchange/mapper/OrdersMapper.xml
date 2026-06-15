@@ -103,8 +103,16 @@
         WHERE goods_id = #{goodsId}
         )
     </select>
+
     <select id="selectUserOrdersImages" resultType="java.lang.String">
         SELECT goods_image FROM orders WHERE buyer_id = #{id} OR seller_id = #{id}
+    </select>
+
+    <select id="getOrderDetailsByOrderId" resultType="com.exchange.pojo.Orders">
+        SELECT
+           *
+        FROM orders
+        WHERE id = #{id}
     </select>
 
     <!-- 取消订单 -->

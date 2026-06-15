@@ -18,4 +18,8 @@ public interface OrderService {
     Integer getUnresolvedOrdersCount();
 
     Result deleteOrder(Long id);
+
+    Result getOrderDetailsById(Long id);
+
+    Result operateDrawback(Long id);
 }

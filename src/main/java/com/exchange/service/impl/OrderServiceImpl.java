@@ -54,6 +54,9 @@ public class OrderServiceImpl implements OrderService {
             if (!enableLock) {
                 return Result.error("商品正在被其他用户购买,购买失败");
             }
+            if (!redisUtils.enableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId())) {
+                return Result.error("正在执行操作,请勿进行钱款操作");
+            }
             BigDecimal goodsPrice = goodsMapper.selectGoodsPriceById(goodsId);
             BigDecimal userBalance = userMapper.selectBalanceById(CurrentHolder.getCurrentUserInfo().getId());
             if (userBalance.compareTo(goodsPrice) < 0){
@@ -70,6 +73,9 @@ public class OrderServiceImpl implements OrderService {
             User seller = userMapper.selectById(goodsDetails.getUserId());
             if (seller.getRole()==-1){
                 return Result.error("卖家已被封禁");
+            }
+            if (!seller.getSchool().equals(CurrentHolder.getCurrentUserInfo().getSchool())) {
+                return Result.error("商品不属于您所在的学校");
             }
             goodsMapper.updateSaleStatus(goodsId, 2);
             userMapper.updateBalance(CurrentHolder.getCurrentUserInfo().getId(), userBalance.subtract(goodsPrice));
@@ -93,11 +99,11 @@ public class OrderServiceImpl implements OrderService {
             return Result.success(generatedOrderId.toString());
         } catch (Exception e){
             log.info("购买商品出现错误:{}",e.getMessage());
-            //回滚事务
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.error("购买失败，请重试");
         } finally {
             redisUtils.disableLock(USER_PURCHASE_GOODS_LOCK_KEY + goodsId);
+            redisUtils.disableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId());
         }
     }
 
@@ -117,6 +123,9 @@ public class OrderServiceImpl implements OrderService {
             }
             if (order.getBuyerId().equals(CurrentHolder.getCurrentUserInfo().getId())){
                 if (order.getStatus() == 2){
+                    if (!redisUtils.enableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId())) {
+                        return Result.error("正在执行操作,请勿重复点击");
+                    }
                     ordersMapper.updateOrderStatus(id,4,LocalDateTime.now(),LocalDateTime.now());
                     BigDecimal goodsPrice = order.getGoodsPrice();
                     BigDecimal exchangeIncome = goodsPrice.multiply(EXCHANGE_DEDUCTION_RATE);
@@ -148,6 +157,7 @@ public class OrderServiceImpl implements OrderService {
             return Result.error("确认失败，请重试");
         } finally {
             redisUtils.disableLock(USER_CONFIRM_ORDER_LOCK_KEY+id);
+            redisUtils.disableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId());
         }
     }
 
@@ -185,6 +195,61 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Result getOrderDetailsById(Long id) {
+        Orders orderDetailsByOrderId = ordersMapper.getOrderDetailsByOrderId(id);
+        if (orderDetailsByOrderId == null){
+            return Result.error("订单不存在或未完成");
+        }
+        Long buyerSchool = userMapper.selectUserSchoolId(orderDetailsByOrderId.getBuyerId());
+        if (!buyerSchool.equals(CurrentHolder.getCurrentUserInfo().getSchool())){
+            return Result.error("请勿非法操作,该订单不属于您的管辖范围内");
+        }
+        return Result.success(orderDetailsByOrderId);
+    }
+
+    @Transactional
+    @Override
+    public Result operateDrawback(Long id) {
+        Orders orderDetailsByOrderId = ordersMapper.getOrderDetailsByOrderId(id);
+        if (orderDetailsByOrderId == null){
+            return Result.error("订单不存在或未完成");
+        }
+        if (orderDetailsByOrderId.getStatus()!=4){
+            return Result.error("当前订单状态不支持该操作");
+        }
+        Long buyerSchool = userMapper.selectUserSchoolId(orderDetailsByOrderId.getBuyerId());
+        if (!buyerSchool.equals(CurrentHolder.getCurrentUserInfo().getSchool())){
+            return Result.error("请勿非法操作,该订单不属于您的管辖范围内");
+        }
+        try {
+            if (!redisUtils.enableLock(ADMIN_ORDER_DRAWBACK_LOCK_KEY+ id)) {
+                return Result.error("正在处理退款中，请勿重复操作");
+            }
+            if (!redisUtils.enableLock(USER_FIANCE_OPERATION_LOCK_KEY + orderDetailsByOrderId.getSellerId())&&!redisUtils.enableLock(USER_FIANCE_OPERATION_LOCK_KEY + orderDetailsByOrderId.getBuyerId())) {
+                return Result.error("监测到卖家或买家正在进行其他钱款操作，请稍后再试");
+            }
+            BigDecimal sellerBalance = userMapper.selectBalanceById(orderDetailsByOrderId.getSellerId());
+            if (sellerBalance.compareTo(orderDetailsByOrderId.getGoodsPrice())<0){
+                return Result.error("卖家余额不足,请参照管理员手册处理");
+            }
+            userMapper.updateBalance(orderDetailsByOrderId.getSellerId(),sellerBalance.subtract(orderDetailsByOrderId.getGoodsPrice()));
+            userMapper.addNewWalletUseLog(orderDetailsByOrderId.getSellerId(),5,orderDetailsByOrderId.getGoodsPrice(),LocalDateTime.now());
+            userMapper.updateBalance(orderDetailsByOrderId.getBuyerId(),userMapper.selectBalanceById(orderDetailsByOrderId.getBuyerId()).add(orderDetailsByOrderId.getGoodsPrice()));
+            userMapper.addNewWalletUseLog(orderDetailsByOrderId.getBuyerId(),3,orderDetailsByOrderId.getGoodsPrice(),LocalDateTime.now());
+            ordersMapper.updateOrderStatus(id,3,LocalDateTime.now(),LocalDateTime.now());
+            return Result.success("操作退款成功");
+        }catch (Exception e){
+            log.info("管理员处理订单退款出现错误:{}",e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.error("处理失败，请稍后重试");
+        }finally {
+            redisUtils.disableLock(ADMIN_ORDER_DRAWBACK_LOCK_KEY+ id);
+            redisUtils.disableLock(USER_FIANCE_OPERATION_LOCK_KEY + orderDetailsByOrderId.getSellerId());
+            redisUtils.disableLock(USER_FIANCE_OPERATION_LOCK_KEY + orderDetailsByOrderId.getBuyerId());
+        }
+    }
+
+    @Override
     public Orders getOrderDetails(Long orderId) {
         return ordersMapper.getOrderDetailsById(orderId, CurrentHolder.getCurrentUserInfo().getId());
     }
@@ -207,6 +272,9 @@ public class OrderServiceImpl implements OrderService {
             if (order.getStatus()==3||order.getStatus()==4){
                 return Result.error("当前订单状态不支持该操作");
             }
+            if (!redisUtils.enableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId())) {
+                return Result.error("正在处理中订单中，请勿执行其他钱款操作");
+            }
             BigDecimal goodsPrice = order.getGoodsPrice();
             BigDecimal buyerOriginalBalance = userMapper.selectBalanceById(order.getBuyerId());
             userMapper.updateBalance(order.getBuyerId(),buyerOriginalBalance.add(goodsPrice));
@@ -219,6 +287,7 @@ public class OrderServiceImpl implements OrderService {
             return Result.error("取消失败，请重试");
         } finally {
             redisUtils.disableLock(USER_CANCEL_ORDER_LOCK_KEY + orderId);
+            redisUtils.disableLock(USER_FIANCE_OPERATION_LOCK_KEY+ CurrentHolder.getCurrentUserInfo().getId());
         }
     }
 }

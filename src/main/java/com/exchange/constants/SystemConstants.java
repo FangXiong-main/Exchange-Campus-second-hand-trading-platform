@@ -21,9 +21,11 @@ public class SystemConstants {
     public static final String USER_POST_PREFERENCE_TYPES_KEY = "exchange:user:preference:post:types:id:";
 
     public static final String USER_PURCHASE_GOODS_LOCK_KEY = "exchange:user:purchase:goods:lock:id:";
+    public static final String USER_FIANCE_OPERATION_LOCK_KEY = "exchange:user:finance:operation:lock:id:";
     public static final String USER_CONFIRM_ORDER_LOCK_KEY = "exchange:user:confirm:order:lock:id:";
     public static final String USER_CANCEL_ORDER_LOCK_KEY = "exchange:user:confirm:order:cancel:lock:id:";
     public static final String USER_DELETE_ORDER_OR_GOODS_LOCK_KEY = "exchange:user:delete:orderOrGoods:lock:id:";
+    public static final String ADMIN_ORDER_DRAWBACK_LOCK_KEY = "exchange:admin:order:drawback:lock:id:";
 
     public static final String EXCHANGE_ORDER_INCR_ID_KEY_PREFIX = "exchange:order:icr:id:";
     public static final String EXCHANGE_FILE_INCR_ID_KEY_PREFIX = "exchange:file:icr:id:";
