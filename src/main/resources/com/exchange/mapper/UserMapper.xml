@@ -38,7 +38,7 @@
         select * from user where username = #{username}
     </select>
     <select id="selectCount" resultType="java.lang.Long">
-        SELECT COUNT(*) FROM user where role = 1 AND school = #{school}
+        SELECT COUNT(*) FROM user where role = 1 or role = -1 AND school = #{school}
     </select>
 
 
@@ -106,10 +106,17 @@
         FROM user
         WHERE id = #{id}
     </select>
+
     <select id="selectAvatarUrlById" resultType="java.lang.String">
         SELECT avatar_url
         FROM user
         WHERE id = #{id}
+    </select>
+
+    <select id="selectBandedUserCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user
+        WHERE role = -1 AND school = #{school}
     </select>
 
     <!-- 封禁：只能封 非管理员 -->

@@ -66,4 +66,6 @@ public interface UserMapper {
     Long selectUserSchoolId(Long id);
 
     String selectAvatarUrlById(Long id);
+
+    Long selectBandedUserCount(Long school);
 }

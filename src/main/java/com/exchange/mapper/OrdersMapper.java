@@ -12,9 +12,6 @@ import java.util.List;
 
 @Mapper
 public interface OrdersMapper {
-    Long selectCount(Long  school);
-
-    Long countTodayOrder();
 
     List<OrderVO> selectMyOrdersById(Long id);
 

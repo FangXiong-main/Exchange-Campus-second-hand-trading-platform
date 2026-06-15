@@ -171,6 +171,10 @@
     <select id="selectPostImagesUrlByPostId" resultType="java.lang.String">
         SELECT images FROM post WHERE id = #{postId}
     </select>
+    <select id="selectPostCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM post
+        WHERE school = #{school}
+    </select>
 
     <update id="addViewCount">
         UPDATE post

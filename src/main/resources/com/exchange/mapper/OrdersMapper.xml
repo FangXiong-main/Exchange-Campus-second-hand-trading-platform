@@ -39,16 +39,11 @@
     <delete id="deleteById">
         DELETE FROM orders WHERE id = #{id}
     </delete>
+
     <delete id="deleteUserInfoById">
         DELETE FROM orders WHERE buyer_id = #{id} OR seller_id = #{id}
     </delete>
-    <select id="selectCount" resultType="java.lang.Long">
-        SELECT COUNT(*) FROM orders
-    </select>
-    <select id="countTodayOrder" resultType="java.lang.Long">
-        SELECT COUNT(*) FROM orders
-        WHERE DATE(create_time) = CURDATE()
-    </select>
+
     <select id="selectMyOrdersById" resultType="com.exchange.vo.OrderVO">
         SELECT
         o.id,

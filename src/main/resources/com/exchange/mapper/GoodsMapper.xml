@@ -47,6 +47,7 @@
             g.create_time AS time
         FROM goods g
                  LEFT JOIN `user` u ON g.user_id = u.id
+        WHERE g.sale_status = 1 AND g.school = #{school}
         ORDER BY g.create_time DESC
         LIMIT 8
     </select>
@@ -58,7 +59,7 @@
             DATE_FORMAT(create_time, '%Y-%m-%d') AS time,
             0 AS status
         FROM goods
-        WHERE audit_status = 0
+        WHERE audit_status = 0 AND school = #{school}
         ORDER BY create_time DESC
         LIMIT 6
     </select>

@@ -45,4 +45,6 @@ public interface PostMapper {
     void deletePostCommentByPostId(Long postId);
 
     List<String> selectPostImagesUrlByPostId(Long postId);
+
+    Long selectPostCount(Long school);
 }
