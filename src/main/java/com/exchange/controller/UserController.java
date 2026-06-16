@@ -1,13 +1,13 @@
 package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.anno.Log;
 import com.exchange.anno.RequiredAdmin;
 import com.exchange.dto.LoginDTO;
 import com.exchange.dto.UserInfoChangeAuditDTO;
 import com.exchange.service.UserService;
 import com.exchange.vo.Result;
 import jakarta.annotation.Resource;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -23,6 +23,7 @@ public class UserController {
         return userService.getCurrentUser(CurrentHolder.getCurrentUserInfo());
     }
 
+    @Log
     @RequiredAdmin
     @PostMapping("/info-change/audit")
     public Result auditInfoChange(@RequestBody UserInfoChangeAuditDTO userInfoChangeAuditDTO) {
@@ -52,6 +53,7 @@ public class UserController {
     }
 
     // 封禁用户
+    @Log
     @RequiredAdmin
     @PostMapping("/ban")
     public Result banUser(@RequestBody Map<String, Object> map) {
@@ -61,6 +63,7 @@ public class UserController {
     }
 
     // 解封用户
+    @Log
     @RequiredAdmin
     @PostMapping("/unban")
     public Result unBanUser(@RequestBody Map<String, Long> map) {

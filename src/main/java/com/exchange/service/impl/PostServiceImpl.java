@@ -1,17 +1,14 @@
 package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
-import com.exchange.Utils.DeleteFileUtil;
 import com.exchange.Utils.MoveFileUtil;
 import com.exchange.dto.PostCommentDTO;
 import com.exchange.dto.PostDTO;
 import com.exchange.mapper.PostMapper;
 import com.exchange.pojo.Post;
-import com.exchange.pojo.User;
 import com.exchange.service.PostService;
 import com.exchange.vo.PageResult;
 import com.exchange.vo.Result;
-import com.fangxiong.jsonUtilsCore.coreUtil.CustomizeGenericTypes;
 import com.fangxiong.utils.redis.RedisUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -27,9 +24,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class PostServiceImpl implements PostService {
-
-    @Resource
-    private DeleteFileUtil deleteFileUtil;
 
     @Resource
     private MoveFileUtil moveFileUtil;
@@ -96,15 +90,26 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Result deletePost(Long postId) {
-        String postImagesUrl = postMapper.selectPostImagesUrl(postId);
-        if (postImagesUrl != null && !postImagesUrl.isEmpty()){
-            if (!deleteFileUtil.deleteFile(postImagesUrl)) {
-                return Result.error("删除失败");
+        String tempImageUrl = null; boolean needToMoveBackFile = false;
+        try {
+            if (CurrentHolder.getCurrentUserInfo().getSchool()==0){
+                return Result.error("请先绑定学校");
             }
+            String postImagesUrl = postMapper.selectPostImagesUrl(postId);
+            if (postImagesUrl != null && !postImagesUrl.isEmpty()){
+                tempImageUrl = moveFileUtil.moveRealToTemp(postImagesUrl);
+                needToMoveBackFile = true;
+            }
+            postMapper.deletePost(postId, CurrentHolder.getCurrentUserInfo().getId());
+            postMapper.deletePostComment(postId, CurrentHolder.getCurrentUserInfo().getId());
+            return Result.success();
+        } catch (Exception e) {
+            log.error("删除帖子失败", e);
+            if (needToMoveBackFile) {
+                moveFileUtil.moveTempToReal(tempImageUrl);
+            }
+            throw new RuntimeException(e);
         }
-        postMapper.deletePost(postId, CurrentHolder.getCurrentUserInfo().getId());
-        postMapper.deletePostComment(postId, CurrentHolder.getCurrentUserInfo().getId());
-        return Result.success();
     }
 
     @Override

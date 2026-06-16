@@ -1,5 +1,6 @@
 package com.exchange.controller;
 
+import com.exchange.anno.Log;
 import com.exchange.anno.RequiredAdmin;
 import com.exchange.dto.PostCommentDTO;
 import com.exchange.dto.PostDTO;
@@ -17,6 +18,7 @@ public class PostController {
     @Resource
     private PostService postService;
 
+    @Log
     @RequiredAdmin
     @PostMapping("/adminDeleteComment")
     public Result adminDeleteComment(@RequestBody Map<String,String> params){
@@ -24,6 +26,7 @@ public class PostController {
         return postService.adminDeleteComment(commentId);
     }
 
+    @Log
     @RequiredAdmin
     @PostMapping("/adminDeletePost")
     public Result adminDeletePost(@RequestBody Map<String,String> params){

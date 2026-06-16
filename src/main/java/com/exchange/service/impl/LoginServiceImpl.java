@@ -48,6 +48,7 @@ public class LoginServiceImpl implements LoginService {
         if (user == null) {
             return Result.error("管理员不存在");
         }
+
         if (user.getRole() != 2) {
             return Result.error("非管理员用户");
         }

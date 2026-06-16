@@ -3,6 +3,7 @@ package com.exchange.controller;
 import com.exchange.Utils.CodeUtil;
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.Utils.EmailUtil;
+import com.exchange.anno.Log;
 import com.exchange.dto.LoginResult;
 import com.exchange.vo.Result;
 import com.exchange.dto.LoginDTO;
@@ -33,6 +34,7 @@ public class LoginController {
     /**
      * 登录接口
      */
+    @Log
     @PostMapping("/adminLogin")
     public Result login(@RequestBody LoginDTO loginDTO) {
         log.info("管理员登录登录：{}", loginDTO.getUsername());

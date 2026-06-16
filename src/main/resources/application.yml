@@ -1,22 +1,19 @@
-server:
-  port: 8080
-  address: 0.0.0.0
 spring:
 
   application:
     name: ExchangeCampusSecondHandTradingPlatform
 
   datasource:
-    url: jdbc:mysql://localhost:3306/exchange_db_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://exchange-mysql:3306/exchange_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: abc200519P
 
   data:
     redis:
-      host: 1.92.153.209
+      host: exchange-redis
       port: 6379
-      password: 200519
+      password: abc200519P
 
   mail:
     host: smtp.qq.com
@@ -46,12 +43,12 @@ logging:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.fangxiong.pojo
+  type-aliases-package: com.exchange.pojo
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 exchange_file:
-  delete-file-path-prefix: /Users/fangxiong/Documents/
-  local-path: /Users/fangxiong/Documents/ExchangeUploads/
+  delete-file-path-prefix: /root/ExchangeApp/
+  local-path: /root/ExchangeApp/ExchangeUploads/
   prefix: /ExchangeUploads/

@@ -27,7 +27,7 @@ public class OperationLogAspect {
         long endTime=System.currentTimeMillis();
         long costTime=endTime-startTime; // 执行时长
         OperateLog operateLog=new OperateLog();
-        operateLog.setOperateEmpId(getCurrentUserId());
+        operateLog.setOperateUserId(getCurrentUserId());
         operateLog.setOperateTime(LocalDateTime.now());
         operateLog.setClassName(pjp.getTarget().getClass().getName());
         operateLog.setMethodName(pjp.getSignature().getName());

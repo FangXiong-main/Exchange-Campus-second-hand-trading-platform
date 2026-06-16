@@ -1,6 +1,7 @@
 package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.anno.Log;
 import com.exchange.anno.RequiredAdmin;
 import com.exchange.service.OrderService;
 import com.exchange.vo.OrderVO;
@@ -27,6 +28,8 @@ public class OrderController {
         return orderService.getOrderDetailsById(id);
     }
 
+    //操作退款
+    @Log
     @RequiredAdmin
     @PostMapping("/operateDrawback")
     public Result operateDrawback(@RequestBody Map<String,String> params){

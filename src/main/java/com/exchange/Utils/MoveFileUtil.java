@@ -49,15 +49,17 @@ public class MoveFileUtil
         return null;
     }
 
-    public void moveRealToTemp(String realUrl) {
+    public String moveRealToTemp(String realUrl) {
         try {
             String realPath = realUrl.replace(urlPrefix, "");
             File srcFile = new File(saveBasePath+realPath);
             String fileName = srcFile.getName();
             File tempFile = new File(saveBasePath+"temp/", fileName);
             srcFile.renameTo(tempFile);
+            return urlPrefix + "temp/" + fileName;
         } catch (Exception e) {
             log.info("移动到Temp文件失败：{}", e.getMessage());
         }
+        return null;
     }
 }

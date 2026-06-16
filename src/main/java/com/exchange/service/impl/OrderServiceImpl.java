@@ -2,6 +2,7 @@ package com.exchange.service.impl;
 
 import com.exchange.Utils.CurrentHolder;
 import com.exchange.Utils.DeleteFileUtil;
+import com.exchange.Utils.MoveFileUtil;
 import com.exchange.mapper.GoodsMapper;
 import com.exchange.mapper.OrdersMapper;
 import com.exchange.mapper.UserMapper;
@@ -28,7 +29,7 @@ import static com.exchange.constants.SystemConstants.*;
 @Service
 public class OrderServiceImpl implements OrderService {
     @Resource
-    private DeleteFileUtil deleteFileUtil;
+    private MoveFileUtil moveFileUtil;
 
     @Resource
     private RedisUtils redisUtils;
@@ -169,6 +170,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result deleteOrder(Long id) {
         Orders order = ordersMapper.findById(id);
+        String tempImageUrl = null;
+        boolean needToMoveBackFile = false;
         if (order == null){
             return Result.error("订单不存在");
         } else if (!order.getBuyerId().equals(CurrentHolder.getCurrentUserInfo().getId())) {
@@ -180,13 +183,15 @@ public class OrderServiceImpl implements OrderService {
             }
             Boolean isExist = goodsMapper.selectGoodsIsExist(order.getGoodsId());
             if (!isExist){
-                if (!deleteFileUtil.deleteFile(order.getGoodsImage())) {
-                    return Result.error("删除失败");
-                }
+               tempImageUrl = moveFileUtil.moveRealToTemp(order.getGoodsImage());
+               needToMoveBackFile = true;
             }
             ordersMapper.deleteById(id);
         } catch (Exception e) {
             log.info("删除订单出现错误:{}",e.getMessage());
+            if (needToMoveBackFile){
+                moveFileUtil.moveTempToReal(tempImageUrl);
+            }
             throw new RuntimeException(e);
         } finally {
             redisUtils.disableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id);

@@ -1,6 +1,7 @@
 package com.exchange.controller;
 
 import com.exchange.Utils.CurrentHolder;
+import com.exchange.anno.Log;
 import com.exchange.anno.RequiredAdmin;
 import com.exchange.dto.LoginResult;
 import com.exchange.dto.SearchGoodsDTO;
@@ -46,6 +47,7 @@ public class GoodsController {
     }
 
     // ====================== 审核通过 ======================
+    @Log
     @RequiredAdmin
     @PostMapping("/pass")
     public Result pass(@RequestBody Map<String, Object> map) {
@@ -55,6 +57,7 @@ public class GoodsController {
     }
 
     // ====================== 审核驳回 ======================
+    @Log
     @RequiredAdmin
     @PostMapping("/reject")
     public Result reject(@RequestBody Map<String, Object> map) {
@@ -75,6 +78,7 @@ public class GoodsController {
     }
 
     // 删除商品
+    @Log
     @RequiredAdmin
     @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable Long id) {

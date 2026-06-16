@@ -33,9 +33,6 @@ public class GoodsServiceImpl implements GoodsService {
     private RedisUtils redisUtils;
 
     @Resource
-    private DeleteFileUtil deleteFileUtil;
-
-    @Resource
     private OrdersMapper ordersMapper;
 
     @Resource
@@ -77,17 +74,24 @@ public class GoodsServiceImpl implements GoodsService {
     // ====================== 删除 ======================
     @Override
     public Result deleteById(Long id) {
+        String imageUrl = goodsMapper.findById(id).getImages();
+        String tempImageUrl = null;
+        boolean needToMoveBackFile = false;
         try {
             if (!redisUtils.enableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id)) {
                 return Result.error("删除失败，请稍后重试");
             }
             if (!ordersMapper.selectByGoodsIdIfExist(id)) {
-                deleteFileUtil.deleteFile(goodsMapper.findById(id).getImages());
+                tempImageUrl = moveFileUtil.moveRealToTemp(imageUrl);
+                needToMoveBackFile = true;
             }
             goodsMapper.deleteById(id);
             return Result.success();
         } catch (Exception e) {
             log.error("删除商品失败", e);
+            if (needToMoveBackFile) {
+                moveFileUtil.moveTempToReal(tempImageUrl);
+            }
             return Result.error("删除失败");
         } finally {
             redisUtils.disableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id);
