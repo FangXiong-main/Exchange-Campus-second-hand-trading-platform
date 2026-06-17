@@ -15,7 +15,7 @@ public class EmailUtil {
         this.javaMailSender = javaMailSender;
     }
 
-    private static final String FROM = "1255404327@qq.com";
+    private static final String FROM = "exchange_office@qq.com";
 
     public void sendChangePasswordCode(String to, String code) throws MessagingException{
         String subject = "Exchange！校园二手交易平台 - 修改密码验证码";

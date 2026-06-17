@@ -229,10 +229,12 @@ public class UserServiceImpl implements UserService {
                 return Result.success();
             }
             String realAvatarUrl = null;
-            if (userInfoChangeAuditDTO.getAvatarUrl()!=null&&!userInfoChangeAuditDTO.getAvatarUrl().isEmpty()&&!userInfoChangeAuditDTO.getAvatarUrl().equals(EXCHANGE_DEFAULT_AVATAR_URL)){
+            if (userInfoChangeAuditDTO.getAvatarUrl()!=null&&!userInfoChangeAuditDTO.getAvatarUrl().isEmpty()){
                 realAvatarUrl  = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
-                tempImageUrl = moveFileUtil.moveRealToTemp(userMapper.selectAvatarUrlById(userInfoChangeAuditDTO.getId()));
-                needToMoveBackFile = true;
+                if(!userInfoChangeAuditDTO.getAvatarUrl().equals(EXCHANGE_DEFAULT_AVATAR_URL)){
+                    tempImageUrl = moveFileUtil.moveRealToTemp(userMapper.selectAvatarUrlById(userInfoChangeAuditDTO.getId()));
+                    needToMoveBackFile = true;
+                }
             }
             if (!userInfoChangeAuditDTO.getSchool().equals(userInfoChangeAuditDTO.getOriginalSchool())){
                 goodsMapper.changeUserGoodsSchool(userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getSchool());

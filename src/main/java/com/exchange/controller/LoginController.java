@@ -34,7 +34,7 @@ public class LoginController {
     /**
      * 登录接口
      */
-    @Log
+
     @PostMapping("/adminLogin")
     public Result login(@RequestBody LoginDTO loginDTO) {
         log.info("管理员登录登录：{}", loginDTO.getUsername());
@@ -71,7 +71,7 @@ public class LoginController {
         redisUtils.setStringValue(EMAIL_KEY+email, code, CODE_EXPIRE_TIME);
         redisUtils.increaseSMSCodeSendTimes(SMS_CODE_TIMES_KEY+email);
         log.info("（登录）已将验证码保存到redis中：{}",code);
-        //emailUtil.sendVerifyCodeHtml(email, code);
+        emailUtil.sendVerifyCodeHtml(email, code);
         return Result.success();
     }
 
@@ -106,9 +106,9 @@ public class LoginController {
         redisUtils.increaseSMSCodeSendTimes(SMS_CODE_TIMES_KEY+email);
         log.info("已将验证码保存到redis中：{}",code);
         if (type == 1){
-            //emailUtil.sendChangePasswordCode(email, code);
+            emailUtil.sendChangePasswordCode(email, code);
         }else if (type == 2){
-            //emailUtil.sendLogOffCode(email, code);
+            emailUtil.sendLogOffCode(email, code);
         }
         return Result.success();
     }

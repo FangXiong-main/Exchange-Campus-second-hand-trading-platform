@@ -34,6 +34,8 @@ public class SystemConstants {
 
     public static final String EXCHANGE_DEFAULT_AVATAR_URL = "/ExchangeUploads/default-images/default-avatar.jpg";
 
+    public static final Long EXCHANGE_OFFICIAL_ID = 1L;
+
     public static final BigDecimal EXCHANGE_DEDUCTION_RATE = BigDecimal.valueOf(0.01);
     public static final Integer SMS_CODE_TIMES_LIMIT = 3;
     public static final LocalDateTime EXCHANGE_ORDER_START_TIME = LocalDateTime.now();

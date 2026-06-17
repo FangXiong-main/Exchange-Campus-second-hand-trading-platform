@@ -135,7 +135,8 @@ public class OrderServiceImpl implements OrderService {
                     userMapper.updateBalance(order.getSellerId(),sellerOriginalBalance.add(sellerIncome));
                     userMapper.addNewWalletUseLog(order.getSellerId(),2,goodsPrice,LocalDateTime.now());
                     userMapper.addNewWalletUseLog(order.getSellerId(),5,exchangeIncome,LocalDateTime.now());
-                    Long schoolAdminId = userMapper.findSchoolAdminId(CurrentHolder.getCurrentUserInfo().getSchool());
+                    //Long schoolAdminId = userMapper.findSchoolAdminId(CurrentHolder.getCurrentUserInfo().getSchool());
+                    Long schoolAdminId = EXCHANGE_OFFICIAL_ID;
                     userMapper.updateBalance(schoolAdminId,userMapper.selectBalanceById(schoolAdminId).add(exchangeIncome));
                     userMapper.addNewWalletUseLog(schoolAdminId,2,exchangeIncome,LocalDateTime.now());
                     return Result.success("确认成功");
@@ -153,7 +154,7 @@ public class OrderServiceImpl implements OrderService {
                 return Result.error("请勿非法操作");
             }
         } catch (Exception e) {
-            log.info("确认订单出现错误:{}",e.getMessage());
+            log.info("确认订单出现错误:{}",e.toString());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.error("确认失败，请重试");
         } finally {
