@@ -118,6 +118,11 @@
         FROM user
         WHERE role = -1 AND school = #{school}
     </select>
+    <select id="selectUserAvatarById" resultType="java.lang.String">
+        SELECT avatar_url
+        FROM user
+        WHERE id = #{id}
+    </select>
 
     <!-- 封禁：只能封 非管理员 -->
     <update id="banUser">

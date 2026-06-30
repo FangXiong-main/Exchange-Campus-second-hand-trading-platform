@@ -18,6 +18,7 @@ public class PostController {
     @Resource
     private PostService postService;
 
+    //删除评论
     @Log
     @RequiredAdmin
     @PostMapping("/adminDeleteComment")
@@ -26,6 +27,7 @@ public class PostController {
         return postService.adminDeleteComment(commentId);
     }
 
+    //删除帖子
     @Log
     @RequiredAdmin
     @PostMapping("/adminDeletePost")

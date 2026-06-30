@@ -22,7 +22,7 @@ public interface OrdersMapper {
 
     Orders findById(Long id);
 
-    void cancelOrder(
+    int cancelOrder(
             @Param("orderId") Long orderId,
             @Param("finishTime") LocalDateTime finishTime
     );
@@ -32,8 +32,9 @@ public interface OrdersMapper {
             @Param("generatedOrderId") Long generatedOrderId
     );
 
-    void updateOrderStatus(
+    int updateOrderStatus(
             @Param("id") Long id,
+            @Param("originalStatus") Integer originalStatus,
             @Param("status") Integer status,
             @Param("updateTime") LocalDateTime updateTime,
             @Param("finishTime") LocalDateTime finishTime

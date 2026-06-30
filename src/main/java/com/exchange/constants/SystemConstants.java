@@ -2,6 +2,7 @@ package com.exchange.constants;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 public class SystemConstants {
     public static final String TOKEN_KEY = "exchange:login:user:tokens:id:";
@@ -18,17 +19,17 @@ public class SystemConstants {
     public static final String REQUEST_INFO_CHANGE_REJECTED_KEY = "exchange:change:info:rejected:id:";
 
 
-    public static final String USER_POST_PREFERENCE_TYPES_KEY = "exchange:user:preference:post:types:id:";
 
     public static final String USER_PURCHASE_GOODS_LOCK_KEY = "exchange:user:purchase:goods:lock:id:";
     public static final String USER_FIANCE_OPERATION_LOCK_KEY = "exchange:user:finance:operation:lock:id:";
     public static final String USER_CONFIRM_ORDER_LOCK_KEY = "exchange:user:confirm:order:lock:id:";
     public static final String USER_CANCEL_ORDER_LOCK_KEY = "exchange:user:confirm:order:cancel:lock:id:";
-    public static final String USER_DELETE_ORDER_OR_GOODS_LOCK_KEY = "exchange:user:delete:orderOrGoods:lock:id:";
     public static final String ADMIN_ORDER_DRAWBACK_LOCK_KEY = "exchange:admin:order:drawback:lock:id:";
 
     public static final String EXCHANGE_ORDER_INCR_ID_KEY_PREFIX = "exchange:order:icr:id:";
     public static final String EXCHANGE_FILE_INCR_ID_KEY_PREFIX = "exchange:file:icr:id:";
+    public static final String EXCHANGE_ORDER_REQUEST_INCR_ID_KEY_PREFIX = "exchange:request:order:icr:id:";
+    public static final String EXCHANGE_FINANCE_REQUEST_INCR_ID_KEY_PREFIX = "exchange:request:finance:icr:id:";
 
     public static final String EXCHANGE_UUID_TIME_KEY_FORMAT = "yyyy:MM";
 
@@ -36,15 +37,28 @@ public class SystemConstants {
 
     public static final Long EXCHANGE_OFFICIAL_ID = 1L;
 
+    public static final Long EXCHANGE_ORDER_PROCESS_TIME_LIMIT = TimeUnit.SECONDS.toNanos(28);
+
     public static final BigDecimal EXCHANGE_DEDUCTION_RATE = BigDecimal.valueOf(0.01);
     public static final Integer SMS_CODE_TIMES_LIMIT = 3;
-    public static final LocalDateTime EXCHANGE_ORDER_START_TIME = LocalDateTime.now();
+    public static final LocalDateTime EXCHANGE_UUID_START_TIME = LocalDateTime.now();
+
     public static final Integer EXCHANGE_ORDER_ID_TIMESTAMP_LENGTH = 23;
     public static final Integer EXCHANGE_ORDER_ID_MACHINE_CODE_LENGTH = 8;
     public static final Integer EXCHANGE_ORDER_ID_SEQUENCE_LENGTH = 32;
+
     public static final Integer EXCHANGE_FILE_ID_TIMESTAMP_LENGTH = 20;
     public static final Integer EXCHANGE_FILE_ID_MACHINE_CODE_LENGTH = 8;
     public static final Integer EXCHANGE_FILE_ID_SEQUENCE_LENGTH = 35;
+
+    public static final Integer EXCHANGE_ORDER_REQUEST_ID_TIMESTAMP_LENGTH = 21;
+    public static final Integer EXCHANGE_ORDER_REQUEST_ID_MACHINE_CODE_LENGTH = 7;
+    public static final Integer EXCHANGE_ORDER_REQUEST_ID_SEQUENCE_LENGTH = 35;
+
+    public static final Integer EXCHANGE_FINANCE_REQUEST_ID_TIMESTAMP_LENGTH = 22;
+    public static final Integer EXCHANGE_FINANCE_REQUEST_ID_MACHINE_CODE_LENGTH = 6;
+    public static final Integer EXCHANGE_FINANCE_REQUEST_ID_SEQUENCE_LENGTH = 35;
+
     public static final Long EXCHANGE_MACHINE_CODE = 20000828L;
 
     public static final Long TOKEN_EXPIRE_TIME = 1000L * 60 * 30;

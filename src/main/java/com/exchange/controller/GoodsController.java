@@ -25,7 +25,7 @@ public class GoodsController {
     @Resource
     private GoodsService goodsService;
 
-    // ====================== 分页查询待审核商品 ======================
+    // 分页查询待审核商品
     @RequiredAdmin
     @GetMapping("/auditPage")
     public Result auditPage(
@@ -38,7 +38,7 @@ public class GoodsController {
         return Result.success(pageInfo);
     }
 
-    // ====================== 商品详情 ======================
+    //商品详情
     @RequiredAdmin
     @GetMapping("/detail/{id}")
     public Result detail(@PathVariable Long id) {
@@ -46,7 +46,7 @@ public class GoodsController {
         return Result.success(goods);
     }
 
-    // ====================== 审核通过 ======================
+    //审核通过
     @Log
     @RequiredAdmin
     @PostMapping("/pass")
@@ -56,7 +56,7 @@ public class GoodsController {
         return Result.success("审核通过");
     }
 
-    // ====================== 审核驳回 ======================
+    //审核驳回
     @Log
     @RequiredAdmin
     @PostMapping("/reject")

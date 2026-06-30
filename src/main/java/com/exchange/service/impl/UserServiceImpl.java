@@ -220,7 +220,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Result auditInfoChange(UserInfoChangeAuditDTO userInfoChangeAuditDTO) {
-        boolean needToMoveBackFile = false; String tempImageUrl = null;
+        boolean needToMoveBackFile = false; String originalImageUrl = userMapper.selectUserAvatarById(userInfoChangeAuditDTO.getId());
         try {
             if(userInfoChangeAuditDTO.getAuditStatus()==2){
                 redisUtils.setStringValue(REQUEST_INFO_CHANGE_REJECTED_KEY+userInfoChangeAuditDTO.getId(), userInfoChangeAuditDTO.getRejectReason());
@@ -231,8 +231,8 @@ public class UserServiceImpl implements UserService {
             String realAvatarUrl = null;
             if (userInfoChangeAuditDTO.getAvatarUrl()!=null&&!userInfoChangeAuditDTO.getAvatarUrl().isEmpty()){
                 realAvatarUrl  = moveFileUtil.moveTempToReal(userInfoChangeAuditDTO.getAvatarUrl());
-                if(!userInfoChangeAuditDTO.getAvatarUrl().equals(EXCHANGE_DEFAULT_AVATAR_URL)){
-                    tempImageUrl = moveFileUtil.moveRealToTemp(userMapper.selectAvatarUrlById(userInfoChangeAuditDTO.getId()));
+                if(!originalImageUrl.equals(EXCHANGE_DEFAULT_AVATAR_URL)){
+                    originalImageUrl = moveFileUtil.moveRealToTemp(userMapper.selectAvatarUrlById(userInfoChangeAuditDTO.getId()));
                     needToMoveBackFile = true;
                 }
             }
@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             log.info("审核信息修改失败");
             if (needToMoveBackFile){
-                moveFileUtil.moveTempToReal(tempImageUrl);
+                moveFileUtil.moveTempToReal(originalImageUrl);
             }
             return Result.error("审核信息修改失败");
         }

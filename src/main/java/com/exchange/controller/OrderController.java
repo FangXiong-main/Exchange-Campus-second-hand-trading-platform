@@ -22,6 +22,7 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
+    //根据订单号查询订单
     @RequiredAdmin
     @GetMapping("/getOrderDetailById")
     public Result getOrderDetailById(@RequestParam Long id) {

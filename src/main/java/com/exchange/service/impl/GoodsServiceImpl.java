@@ -18,13 +18,13 @@ import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.print.attribute.standard.PageRanges;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-import static com.exchange.constants.SystemConstants.USER_DELETE_ORDER_OR_GOODS_LOCK_KEY;
+
 
 @Service
 @Slf4j
@@ -72,15 +72,13 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     // ====================== 删除 ======================
+    @Transactional
     @Override
     public Result deleteById(Long id) {
         String imageUrl = goodsMapper.findById(id).getImages();
         String tempImageUrl = null;
         boolean needToMoveBackFile = false;
         try {
-            if (!redisUtils.enableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id)) {
-                return Result.error("删除失败，请稍后重试");
-            }
             if (!ordersMapper.selectByGoodsIdIfExist(id)) {
                 tempImageUrl = moveFileUtil.moveRealToTemp(imageUrl);
                 needToMoveBackFile = true;
@@ -92,9 +90,8 @@ public class GoodsServiceImpl implements GoodsService {
             if (needToMoveBackFile) {
                 moveFileUtil.moveTempToReal(tempImageUrl);
             }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.error("删除失败");
-        } finally {
-            redisUtils.disableLock(USER_DELETE_ORDER_OR_GOODS_LOCK_KEY+ id);
         }
     }
 

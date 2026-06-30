@@ -126,7 +126,7 @@
     <update id="updateSaleStatus">
         UPDATE goods
         SET sale_status = #{saleStatus}
-        WHERE id = #{id}
+        WHERE id = #{id} AND sale_status = 1
     </update>
     <update id="changeUserGoodsSchool">
         UPDATE goods

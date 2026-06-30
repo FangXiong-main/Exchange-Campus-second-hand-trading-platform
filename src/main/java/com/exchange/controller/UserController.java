@@ -23,6 +23,8 @@ public class UserController {
         return userService.getCurrentUser(CurrentHolder.getCurrentUserInfo());
     }
 
+
+    //用户信息修改审核
     @Log
     @RequiredAdmin
     @PostMapping("/info-change/audit")
@@ -31,7 +33,7 @@ public class UserController {
     }
 
 
-    // 全部用户（分页 + 邮箱搜索）
+    // 用户管理全部用户（分页 + 邮箱搜索）
     @RequiredAdmin
     @GetMapping("/page")
     public Result getUserPage(
@@ -43,6 +45,7 @@ public class UserController {
         return userService.getUserPage(pageNum, pageSize, email, status);
     }
 
+    //查询用户信息修改审核列表
     @RequiredAdmin
     @GetMapping("/info-change/page")
     public Result getInfoChangePage(

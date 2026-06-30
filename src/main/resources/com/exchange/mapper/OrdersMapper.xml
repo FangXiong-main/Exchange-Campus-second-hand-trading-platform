@@ -114,7 +114,7 @@
     <update id="cancelOrder">
         UPDATE orders
         SET status = 3, finish_time = #{finishTime}, update_time = #{finishTime}
-        WHERE id = #{orderId}
+        WHERE id = #{orderId} AND status = 1 OR 2
     </update>
 
     <update id="updateOrderStatus">
@@ -123,7 +123,7 @@
         <if test="finishTime != null">
             , finish_time = #{finishTime}
         </if>
-        WHERE id = #{id}
+        WHERE id = #{id} AND status = #{originalStatus}
     </update>
 
 

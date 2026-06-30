@@ -36,7 +36,7 @@ public interface GoodsMapper {
 
     void updateGoods(Goods goods);
 
-    void updateSaleStatus(
+    int updateSaleStatus(
             @Param("id") Long id,
             @Param("saleStatus") Integer saleStatus
     );

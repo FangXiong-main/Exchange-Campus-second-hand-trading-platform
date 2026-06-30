@@ -12,9 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static com.exchange.constants.SystemConstants.*;
@@ -64,7 +62,7 @@ public class UploadController {
         String newFileName = redisUtils.uniqueIdGenerator(
                 EXCHANGE_FILE_INCR_ID_KEY_PREFIX,
                 EXCHANGE_UUID_TIME_KEY_FORMAT,
-                EXCHANGE_ORDER_START_TIME,
+                EXCHANGE_UUID_START_TIME,
                 EXCHANGE_FILE_ID_TIMESTAMP_LENGTH,
                 EXCHANGE_FILE_ID_MACHINE_CODE_LENGTH,
                 EXCHANGE_FILE_ID_SEQUENCE_LENGTH,
