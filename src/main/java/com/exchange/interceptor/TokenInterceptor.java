@@ -41,7 +41,6 @@ public class TokenInterceptor implements HandlerInterceptor {
         {
             log.info("用户被封禁");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            redisUtils.remove(ACCOUNT_BANDED_KEY + id);
             return false;
         }
         int role = request.getIntHeader("role");
