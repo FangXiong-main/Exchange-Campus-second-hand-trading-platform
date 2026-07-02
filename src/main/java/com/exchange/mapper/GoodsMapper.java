@@ -41,6 +41,10 @@ public interface GoodsMapper {
             @Param("saleStatus") Integer saleStatus
     );
 
+    void updateGoodsStatus(@Param("id") Long id,
+                           @Param("saleStatus") Integer saleStatus
+    );
+
     void addGoods(Goods goods);
 
     List<GoodsDTO> selectNewGoodsPage(Long  school);

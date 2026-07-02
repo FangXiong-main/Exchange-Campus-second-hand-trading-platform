@@ -115,7 +115,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void updateSaleStatus(Long id, Integer saleStatus) {
-        goodsMapper.updateSaleStatus(id, saleStatus);
+        goodsMapper.updateGoodsStatus(id, saleStatus);
     }
 
     @Override

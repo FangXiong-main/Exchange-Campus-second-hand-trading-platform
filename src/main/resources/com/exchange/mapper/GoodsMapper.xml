@@ -134,6 +134,12 @@
         WHERE user_id = #{id}
     </update>
 
+    <update id="updateGoodsStatus">
+        UPDATE goods
+        SET sale_status = #{saleStatus}
+        WHERE id = #{id}
+    </update>
+
     <select id="findRejectedGoods" resultType="com.exchange.pojo.Goods">
         SELECT
             g.*,
