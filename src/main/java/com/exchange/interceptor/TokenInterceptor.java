@@ -39,7 +39,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         String isBanded = redisUtils.getStringValue(ACCOUNT_BANDED_KEY + id, String.class);
         if(isBanded!=null)
         {
-            log.info("用户被封禁");
+            log.info("用户被封禁：{}",isBanded);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
